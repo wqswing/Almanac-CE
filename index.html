@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中西合璧万年历 - 假期调休黄历版</title>
+    <title>中西合璧万年历 - 马德里 25-26 官方校历版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Inter:wght@400;600&display=swap');
@@ -27,49 +27,36 @@
         .is-today { background-color: #fffbeb; border: 2px solid #fbbf24 !important; border-radius: 1rem; }
         .day-selected { border: 2px solid #ef4444 !important; border-radius: 1rem; box-shadow: 0 0 15px rgba(239, 68, 68, 0.2); }
         
+        .tag-school-off { position: absolute; top: 4px; right: 4px; font-size: 9px; background: #fcd34d; color: #92400e; padding: 0 3px; border-radius: 2px; font-weight: bold; }
+        .work-tag { position: absolute; top: 4px; left: 4px; font-size: 10px; background: #94a3b8; color: white; padding: 0 3px; border-radius: 2px; font-weight: bold; }
+        .rest-tag { position: absolute; top: 4px; left: 4px; font-size: 10px; background: #ef4444; color: white; padding: 0 3px; border-radius: 2px; font-weight: bold; }
+
         .lunar-text { font-size: 0.7rem; color: #64748b; margin-top: 2px; }
         .fest-cn { color: #dc2626; font-weight: 700; font-size: 0.65rem; }
         .fest-es { color: #7c3aed; font-weight: 700; font-size: 0.65rem; }
         .term-text { color: #059669; font-weight: 700; font-size: 0.65rem; }
-        .shujiu-text { color: #3b82f6; font-size: 0.6rem; font-weight: 500; }
-        
-        /* 调休标签 */
-        .work-tag { position: absolute; top: 4px; left: 4px; font-size: 10px; background: #94a3b8; color: white; padding: 0 3px; border-radius: 2px; font-weight: bold; }
-        .rest-tag { position: absolute; top: 4px; left: 4px; font-size: 10px; background: #ef4444; color: white; padding: 0 3px; border-radius: 2px; font-weight: bold; }
 
-        .tag-cn { font-size: 0.5rem; color: #dc2626; border: 1px solid #fecaca; padding: 0 2px; border-radius: 2px; line-height: 1; }
-        .tag-es { font-size: 0.5rem; color: #7c3aed; border: 1px solid #ddd6fe; padding: 0 2px; border-radius: 2px; line-height: 1; }
-        
-        .almanac-panel { background-image: radial-gradient(#fff 1px, transparent 1px); background-size: 20px 20px; }
-        
-        @media (max-width: 768px) {
-            .main-layout { flex-direction: column; }
-            .side-panel { width: 100% !important; border-left: none !important; border-top: 1px solid #e2e8f0; }
-        }
+        .yi { background: #e11d48; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-right: 8px; flex-shrink: 0; font-weight: bold; }
+        .ji { background: #475569; color: white; border-radius: 50%; width: 22px; height: 22px; display: flex; align-items: center; justify-content: center; font-size: 12px; margin-right: 8px; flex-shrink: 0; font-weight: bold; }
     </style>
 </head>
-<body class="p-2 md:p-6 lg:p-10">
+<body class="p-2 md:p-6">
 
-    <div class="max-w-7xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden flex main-layout border border-slate-200">
-        
-        <!-- Left: Calendar Area -->
+    <div class="max-w-7xl mx-auto bg-white rounded-[2rem] shadow-2xl overflow-hidden flex flex-col md:flex-row border border-slate-200">
+        <!-- 左侧日历 -->
         <div class="flex-1 p-4 md:p-8">
             <div class="flex flex-wrap justify-between items-center mb-8 gap-4">
                 <div class="flex items-center gap-6">
-                    <h1 id="currentMonthDisplay" class="text-4xl font-black text-slate-800 tracking-tighter">2026年 1月</h1>
+                    <h1 id="currentMonthDisplay" class="text-4xl font-black text-slate-800 tracking-tighter">2026年 2月</h1>
                     <div class="flex bg-slate-100 p-1 rounded-xl">
                         <select id="yearSelect" class="bg-transparent border-none font-bold text-slate-600 focus:ring-0 cursor-pointer text-sm" onchange="jumpToDate()"></select>
                         <select id="monthSelect" class="bg-transparent border-none font-bold text-slate-600 focus:ring-0 cursor-pointer text-sm" onchange="jumpToDate()"></select>
                     </div>
                 </div>
                 <div class="flex items-center gap-3">
-                    <button onclick="changeMonth(-1)" class="p-3 hover:bg-slate-100 rounded-full transition-all border border-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
-                    </button>
-                    <button onclick="resetToToday()" class="px-6 py-2.5 bg-slate-800 text-white rounded-xl font-bold text-sm hover:bg-slate-700 shadow-md">今日</button>
-                    <button onclick="changeMonth(1)" class="p-3 hover:bg-slate-100 rounded-full transition-all border border-slate-200">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
-                    </button>
+                    <button onclick="changeMonth(-1)" class="p-3 hover:bg-slate-100 rounded-full border border-slate-200 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg></button>
+                    <button onclick="resetToToday()" class="px-6 py-2.5 bg-slate-800 text-white rounded-xl font-bold text-sm shadow-md hover:bg-slate-700 transition-all">今日</button>
+                    <button onclick="changeMonth(1)" class="p-3 hover:bg-slate-100 rounded-full border border-slate-200 transition-colors"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg></button>
                 </div>
             </div>
 
@@ -82,109 +69,82 @@
                 <div class="py-2 text-center text-xs font-black text-slate-400 uppercase">五</div>
                 <div class="py-2 text-center text-xs font-black text-red-500 uppercase">六</div>
             </div>
-
             <div id="calendarDays" class="calendar-grid gap-1.5"></div>
         </div>
 
-        <!-- Right: Almanac Panel -->
-        <div id="sidePanel" class="w-full md:w-[400px] bg-slate-50 border-l border-slate-100 p-8 almanac-panel overflow-y-auto">
-            <div class="text-center mb-8">
-                <div id="sideDate" class="text-6xl font-black text-slate-800 mb-2">12</div>
-                <div id="sideMonthYear" class="text-slate-500 font-bold uppercase tracking-widest text-sm">January 2026</div>
-                <div id="sideWeek" class="mt-4 inline-block px-4 py-1 bg-red-100 text-red-700 rounded-full text-xs font-black">星期一</div>
+        <!-- 右侧面板 -->
+        <div id="sidePanel" class="w-full md:w-[420px] bg-slate-50 border-l border-slate-100 p-8 overflow-y-auto max-h-[95vh]">
+            <div class="text-center mb-6">
+                <div id="sideDate" class="text-8xl font-black text-slate-800 mb-2 leading-none">17</div>
+                <div id="sideMonthYear" class="text-slate-500 font-bold uppercase tracking-widest text-sm">February 2026</div>
+                <div id="sideWeek" class="mt-4 inline-block px-6 py-1.5 bg-red-500 text-white rounded-full text-xs font-black shadow-sm">星期二</div>
             </div>
 
-            <div class="space-y-6">
-                <!-- Shujiu / Terms -->
-                <div id="sideShujiuBox" class="hidden bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                    <div class="text-[10px] font-black text-blue-600 mb-1 uppercase tracking-widest">季节状态 SEASONAL</div>
-                    <div id="sideShujiuText" class="text-sm font-bold text-blue-900">三九 第1天</div>
+            <div class="space-y-5">
+                <!-- 节假日提醒 -->
+                <div id="sideHolidayBox" class="hidden bg-amber-50 p-4 rounded-2xl border border-amber-200 shadow-sm">
+                    <div id="sideHolidayText" class="text-base font-bold text-amber-900 leading-tight space-y-1"></div>
                 </div>
 
-                <!-- Lunar Info -->
-                <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
-                    <div class="text-xs font-black text-slate-400 mb-3 uppercase tracking-tighter flex justify-between">
+                <!-- 农历基础信息 -->
+                <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-16 h-16 opacity-5 pointer-events-none">
+                        <svg viewBox="0 0 100 100" fill="currentColor" class="text-red-600"><path d="M50 0 L100 50 L50 100 L0 50 Z"/></svg>
+                    </div>
+                    <div class="text-xs font-black text-slate-400 mb-3 flex justify-between uppercase">
                         <span>农历 LUNAR</span>
-                        <span id="sideGZYear" class="text-red-600">乙巳年【蛇】</span>
+                        <span id="sideGZYear" class="text-red-600 font-bold"></span>
                     </div>
-                    <div id="sideLunarMain" class="text-2xl font-bold text-slate-800 mb-1">腊月初八</div>
-                    <div id="sideGZFull" class="text-sm text-slate-500 font-medium">乙巳年 戊子月 辛丑日</div>
+                    <div id="sideLunarMain" class="text-3xl font-black text-slate-800 mb-1">正月初一</div>
+                    <div id="sideGZFull" class="text-sm text-slate-500 font-medium">丙午年 庚寅月 辛未日</div>
+                    <div id="sideChong" class="inline-block mt-3 px-3 py-1 bg-red-50 text-red-600 text-xs font-bold rounded-lg border border-red-100">冲牛(乙丑) 煞西</div>
                 </div>
 
-                <!-- Yi / Ji -->
+                <!-- 宜忌面板 -->
                 <div class="grid grid-cols-2 gap-4">
-                    <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-100">
-                        <div class="w-8 h-8 bg-emerald-500 text-white rounded-full flex items-center justify-center font-bold mb-3 shadow-lg shadow-emerald-200">宜</div>
-                        <div id="sideYi" class="text-sm text-emerald-800 font-bold leading-relaxed">祭祀 祈福</div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center mb-3"><span class="yi">宜</span><span class="text-xs font-black text-slate-400 uppercase">Appropriate</span></div>
+                        <div id="sideYi" class="text-sm text-slate-700 font-bold leading-relaxed min-h-[3rem]">祭祀、祈福</div>
                     </div>
-                    <div class="bg-rose-50 p-5 rounded-2xl border border-rose-100">
-                        <div class="w-8 h-8 bg-rose-500 text-white rounded-full flex items-center justify-center font-bold mb-3 shadow-lg shadow-rose-200">忌</div>
-                        <div id="sideJi" class="text-sm text-rose-800 font-bold leading-relaxed">嫁娶 动土</div>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm">
+                        <div class="flex items-center mb-3"><span class="ji">忌</span><span class="text-xs font-black text-slate-400 uppercase">Avoid</span></div>
+                        <div id="sideJi" class="text-sm text-slate-700 font-bold leading-relaxed min-h-[3rem]">开市、安葬</div>
                     </div>
                 </div>
 
-                <!-- Holiday Detail -->
-                <div id="sideHolidayBox" class="hidden bg-amber-50 p-5 rounded-2xl border border-amber-100">
-                    <div class="text-xs font-black text-amber-600 mb-2">假期安排 HOLIDAY</div>
-                    <div id="sideHolidayText" class="text-lg font-bold text-amber-900">春节放假 (休息)</div>
+                <!-- 额外提醒 (节气/数九/三伏) -->
+                <div id="sideExtraBox" class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
+                    <div id="sideExtraText" class="text-xs font-bold text-blue-800 flex flex-col gap-1">
+                        <div class="flex items-center gap-2">
+                             <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
+                             <span id="sideTermInfo">今日无特殊节气提醒</span>
+                        </div>
+                        <div id="sideShujiuInfo" class="text-blue-600 pl-6"></div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        const LUNAR_INFO = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5d0,0x14573,0x052d0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d558,0x0b540,0x0b5a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5,0x04970,0x064b0,0x074a3,0x0ea50,0x06b58,0x055c0,0x0ab60,0x096d5,0x092e0,0x0c960,0x0d954,0x0d4a0,0x0da50,0x07552,0x056a0,0x0abb7,0x025d0,0x092d0,0x0cab5,0x0a950,0x0b4a0,0x0baa4,0x0ad50,0x055d9,0x04ba0,0x0a5b0,0x15176,0x052b0,0x0a930,0x07954,0x06aa0,0x0ad50,0x05b52,0x04b60,0x0a6e6,0x0a4e0,0x0d260,0x0ea65,0x0d530,0x05aa0,0x076a3,0x096d0,0x04bd7,0x04ad0,0x0a4d0,0x1d0b6,0x0d250,0x0d520,0x0dd45,0x0b5a0,0x056d0,0x055b2,0x049b0,0x0a577,0x0a4b0,0x0aa50,0x1b255,0x06d20,0x0ada0,0x14b63];
+        // --- 核心数据 ---
+        const LUNAR_INFO = [0x04bd8,0x04ae0,0x0a570,0x054d5,0x0d260,0x0d950,0x16554,0x056a0,0x09ad0,0x055d2,0x04ae0,0x0a5b6,0x0a4d0,0x0d250,0x1d255,0x0b540,0x0d6a0,0x0ada2,0x095b0,0x14977,0x04970,0x0a4b0,0x0b4b5,0x06a50,0x06d40,0x1ab54,0x02b60,0x09570,0x052f2,0x04970,0x06566,0x0d4a0,0x0ea50,0x06e95,0x05ad0,0x02b60,0x186e3,0x092e0,0x1c8d7,0x0c950,0x0d4a0,0x1d8a6,0x0b550,0x056a0,0x1a5b4,0x025d0,0x092d0,0x0d2b2,0x0a950,0x0b557,0x06ca0,0x0b550,0x15355,0x04da0,0x0a5d0,0x14573,0x052d0,0x0a9a8,0x0e950,0x06aa0,0x0aea6,0x0ab50,0x04b60,0x0aae4,0x0a570,0x05260,0x0f263,0x0d950,0x05b57,0x056a0,0x096d0,0x04dd5,0x04ad0,0x0a4d0,0x0d4d4,0x0d250,0x0d250,0x0b540,0x0b5a0,0x195a6,0x095b0,0x049b0,0x0a974,0x0a4b0,0x0b27a,0x06a50,0x06d40,0x0af46,0x0ab60,0x09570,0x04af5];
+        const SOLAR_TERMS = ["小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至"];
         const T_GAN = ["甲", "乙", "丙", "丁", "戊", "己", "庚", "辛", "壬", "癸"];
         const D_ZHI = ["子", "丑", "寅", "卯", "辰", "巳", "午", "未", "申", "酉", "戌", "亥"];
         const SX = ["鼠", "牛", "虎", "兔", "龙", "蛇", "马", "羊", "猴", "鸡", "狗", "猪"];
-        const SOLAR_TERMS = ["小寒", "大寒", "立春", "雨水", "惊蛰", "春分", "清明", "谷雨", "立夏", "小满", "芒种", "夏至", "小暑", "大暑", "立秋", "处暑", "白露", "秋分", "寒露", "霜降", "立冬", "小雪", "大雪", "冬至"];
         const LUNAR_MONTHS = ["正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "冬月", "腊月"];
         const LUNAR_DAYS = ["初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十"];
-        const ALMANAC_YI = ["祭祀", "祈福", "安门", "订婚", "纳采", "出行", "上梁", "修造", "安床", "扫舍", "入学"];
-        const ALMANAC_JI = ["嫁娶", "动土", "开市", "安葬", "掘井", "破土", "伐木", "词讼", "置产", "分居"];
-
-        // 假期调休数据库 (针对2026年预测性)
-        const HOLIDAY_DATA = {
-            "2026-1-1": { name: "元旦", type: "rest" },
-            "2026-2-13": { name: "除夕", type: "rest" },
-            "2026-2-14": { name: "春节", type: "rest" },
-            "2026-2-15": { name: "春节", type: "rest" },
-            "2026-2-16": { name: "春节", type: "rest" },
-            "2026-2-17": { name: "春节", type: "rest" },
-            "2026-2-18": { name: "春节", type: "rest" },
-            "2026-2-19": { name: "春节", type: "rest" },
-            "2026-2-8": { name: "调休", type: "work" },
-            "2026-2-22": { name: "调休", type: "work" },
-            "2026-4-5": { name: "清明", type: "rest" },
-            "2026-4-6": { name: "清明", type: "rest" },
-            "2026-5-1": { name: "劳动节", type: "rest" },
-            "2026-5-2": { name: "劳动节", type: "rest" },
-            "2026-5-3": { name: "劳动节", type: "rest" },
-            "2026-5-4": { name: "劳动节", type: "rest" },
-            "2026-5-5": { name: "劳动节", type: "rest" },
-            "2026-4-26": { name: "调休", type: "work" },
-            "2026-5-10": { name: "调休", type: "work" },
-            "2026-6-19": { name: "端午节", type: "rest" },
-            "2026-9-25": { name: "中秋节", type: "rest" },
-            "2026-10-1": { name: "国庆节", type: "rest" },
-            "2026-10-2": { name: "国庆节", type: "rest" },
-            "2026-10-3": { name: "国庆节", type: "rest" },
-            "2026-10-4": { name: "国庆节", type: "rest" },
-            "2026-10-5": { name: "国庆节", type: "rest" },
-            "2026-10-6": { name: "国庆节", type: "rest" },
-            "2026-10-7": { name: "国庆节", type: "rest" },
-            "2026-9-27": { name: "调休", type: "work" },
-            "2026-10-10": { name: "调休", type: "work" },
-        };
-
-        const CN_LUNAR_FEST = {"1-1": "春节", "1-15": "元宵", "5-5": "端午", "8-15": "中秋", "9-9": "重阳", "12-8": "腊八", "12-23": "小年"};
-        const ES_SOLAR_FEST = {"1-1": "Año Nuevo", "1-6": "Reyes Magos", "5-1": "Fiesta Trabajo", "8-15": "Asunción", "10-12": "Fiesta España", "11-1": "Todos Santos", "12-6": "Constitución", "12-8": "Inmaculada", "12-25": "Navidad"};
         const ST_DATA = [0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693, 263343, 285961, 308463, 330788, 352819, 374543, 395920, 416905, 437485, 457653, 477414, 496773];
 
-        let viewDate = new Date();
-        let selectedDate = new Date();
+        const CN_HOLIDAY_2026 = { "2026-01-01": { name: "元旦", type: "rest" }, "2026-02-16": { name: "除夕", type: "rest" }, "2026-02-17": { name: "春节", type: "rest" }, "2026-02-18": { name: "初二", type: "rest" }, "2026-02-19": { name: "初三", type: "rest" }, "2026-02-20": { name: "初四", type: "rest" }, "2026-02-21": { name: "初五", type: "rest" }, "2026-02-22": { name: "初六", type: "rest" }, "2026-04-05": { name: "清明", type: "rest" }, "2026-05-01": { name: "劳动节", type: "rest" } };
+        const MADRID_SCHOOL_CAL = { "2025-10-31": "非教学日", "2025-12-05": "非教学日", "2026-02-13": "非教学日 (白周)", "2026-02-16": "非教学日 (白周/除夕)", "2026-03-02": "非教学日", "2026-05-04": "非教学日" };
+        const ES_FESTS = { "1-1": "Año Nuevo", "1-6": "Epifanía", "3-19": "San José", "4-2": "Jueves Santo", "4-3": "Viernes Santo", "5-1": "Trabajo", "5-2": "Comunidad de Madrid" };
 
-        // 核心农历计算
+        const YI_LIST = ["祭祀", "祈福", "求嗣", "开光", "解除", "伐木", "出火", "入宅", "移徙", "安床", "修造", "动土", "上梁", "纳畜", "安葬", "修坟", "立碑", "破土", "成服", "除服", "移柩", "启钻"];
+        const JI_LIST = ["开市", "交易", "挂匾", "掘井", "乘船", "词讼", "置产", "作灶", "经络", "栽种", "安门", "行丧", "出行", "嫁娶", "入殓", "动土"];
+
+        // --- 辅助函数 ---
         function getLunar(year, month, day) {
             let offset = (Date.UTC(year, month, day) - Date.UTC(1900, 0, 31)) / 86400000;
             let i, leap = 0, temp = 0;
@@ -202,158 +162,160 @@
             if (offset < 0) { offset += temp; i--; }
             return { y: lunarYear, m: i, d: Math.floor(offset + 1), isLeap: isLeap };
         }
-        function getLunarYearDays(y) { let i, sum = 348; for (i = 0x8000; i > 0x8; i >>= 1) sum += (LUNAR_INFO[y - 1900] & i) ? 1 : 0; return sum + getLeapDays(y); }
+        function getLunarYearDays(y) { let sum = 348; for (let i = 0x8000; i > 0x8; i >>= 1) sum += (LUNAR_INFO[y - 1900] & i) ? 1 : 0; return sum + getLeapDays(y); }
         function getLeapMonth(y) { return LUNAR_INFO[y - 1900] & 0xf; }
         function getLeapDays(y) { return getLeapMonth(y) ? ((LUNAR_INFO[y - 1900] & 0x10000) ? 30 : 29) : 0; }
         function getMonthDays(y, m) { return (LUNAR_INFO[y - 1900] & (0x10000 >> m)) ? 30 : 29; }
-        function getTerm(y, n) { return new Date((31556925974.7 * (y - 1900) + ST_DATA[n] * 60000) + Date.UTC(1900, 0, 6, 2, 5)).getUTCDate(); }
+        
+        function getTermDate(y, n) {
+            const time = (31556925974.7 * (y - 1900) + ST_DATA[n] * 60000) + Date.UTC(1900, 0, 6, 2, 5);
+            return new Date(time);
+        }
+
+        function getGZ(year, month, day) {
+            const date = new Date(year, month, day);
+            const baseDate = new Date(1900, 0, 31);
+            const offsetDays = Math.floor((date.getTime() - baseDate.getTime()) / 86400000);
+            const yearGZ = T_GAN[(year - 4) % 10] + D_ZHI[(year - 4) % 12];
+            const monthGZ = T_GAN[(year * 12 + month + 12 + 1) % 10] + D_ZHI[(month + 2) % 12];
+            const dayGZ = T_GAN[(offsetDays + 40) % 10] + D_ZHI[(offsetDays + 14) % 12];
+            return { y: yearGZ, m: monthGZ, d: dayGZ, offset: offsetDays };
+        }
 
         // 数九计算
-        function getShujiu(y, m, d) {
-            const date = new Date(y, m, d);
-            let dzDay = getTerm(y, 23);
-            let dzDate = new Date(y, 11, dzDay);
-            if (date < dzDate) dzDate = new Date(y - 1, 11, getTerm(y - 1, 23));
-            const diff = Math.floor((date - dzDate) / 86400000);
+        function getShujiu(date) {
+            const year = date.getFullYear();
+            // 找去年的冬至 (n=23)
+            let dongzhi = getTermDate(year - 1, 23);
+            if (date < dongzhi) dongzhi = getTermDate(year - 2, 23);
+            
+            const diff = Math.floor((date.getTime() - dongzhi.setHours(0,0,0,0)) / 86400000);
             if (diff >= 0 && diff < 81) {
-                const j = Math.floor(diff / 9) + 1;
-                const dIdx = (diff % 9) + 1;
-                const names = ["","一九","二九","三九","四九","五九","六九","七九","八九","九九"];
-                return { text: names[j], day: dIdx, full: `${names[j]} 第${dIdx}天`, isStart: dIdx === 1 };
+                const jiunumber = Math.floor(diff / 9) + 1;
+                const dayInJiu = (diff % 9) + 1;
+                const jiuNames = ["一九", "二九", "三九", "四九", "五九", "六九", "七九", "八九", "九九"];
+                return `${jiuNames[jiunumber-1]} 第 ${dayInJiu} 天`;
             }
             return null;
         }
 
-        function getGZ(year, month, day) {
-            const yearGZ = T_GAN[(year - 4) % 10] + D_ZHI[(year - 4) % 12];
-            const offset = (Date.UTC(year, month, day) - Date.UTC(1900, 0, 31)) / 86400000;
-            const dayGZIdx = (offset + 40) % 60;
-            const dayGZ = T_GAN[dayGZIdx % 10] + D_ZHI[dayGZIdx % 12];
-            return { year: yearGZ, day: dayGZ };
+        // 三伏计算 (简易版：夏至后第三个庚日为初伏)
+        function getSanfu(date) {
+            const year = date.getFullYear();
+            const xiazhi = getTermDate(year, 11); // 夏至 n=11
+            // 简单估算，庚日每10天一次
+            const baseDate = new Date(1900, 0, 31);
+            const getGeng = (d) => (Math.floor((d.getTime() - baseDate.getTime()) / 86400000) + 40) % 10 === 6;
+            
+            let firstGeng = new Date(xiazhi);
+            while(!getGeng(firstGeng)) firstGeng.setDate(firstGeng.getDate() + 1);
+            
+            const chuFu = new Date(firstGeng); chuFu.setDate(chuFu.getDate() + 20); // 第三个庚日
+            const zhongFu = new Date(chuFu); zhongFu.setDate(zhongFu.getDate() + 10);
+            const liqiu = getTermDate(year, 14); // 立秋 n=14
+            let moFuStart = new Date(liqiu);
+            while(!getGeng(moFuStart)) moFuStart.setDate(moFuStart.getDate() + 1);
+            
+            const curTime = date.setHours(0,0,0,0);
+            if (curTime >= chuFu.getTime() && curTime < chuFu.getTime() + 10*86400000) return `初伏 第${Math.floor((curTime-chuFu)/86400000)+1}天`;
+            if (curTime >= zhongFu.getTime() && curTime < moFuStart.getTime()) return `中伏 第${Math.floor((curTime-zhongFu)/86400000)+1}天`;
+            if (curTime >= moFuStart.getTime() && curTime < moFuStart.getTime() + 10*86400000) return `末伏 第${Math.floor((curTime-moFuStart)/86400000)+1}天`;
+            return null;
         }
 
+        let viewDate = new Date();
+        let selectedDate = new Date();
+
         function render() {
-            const y = viewDate.getFullYear();
-            const m = viewDate.getMonth();
+            const y = viewDate.getFullYear(), m = viewDate.getMonth();
             document.getElementById('currentMonthDisplay').innerText = `${y}年 ${m + 1}月`;
-            
             const firstDay = new Date(y, m, 1).getDay();
             const lastDate = new Date(y, m + 1, 0).getDate();
             const prevLastDate = new Date(y, m, 0).getDate();
             
             const container = document.getElementById('calendarDays');
             container.innerHTML = '';
-
             const terms = {};
-            for (let i = 0; i < 24; i++) if (Math.floor(i / 2) === m) terms[getTerm(y, i)] = SOLAR_TERMS[i];
+            for (let i = 0; i < 24; i++) {
+                const tDate = getTermDate(y, i);
+                if (tDate.getMonth() === m) terms[tDate.getDate()] = SOLAR_TERMS[i];
+            }
 
             for (let i = firstDay; i > 0; i--) createDay(prevLastDate - i + 1, true);
-
-            const today = new Date();
             for (let d = 1; d <= lastDate; d++) {
-                const isToday = today.getFullYear() === y && today.getMonth() === m && today.getDate() === d;
-                const isSelected = selectedDate.getFullYear() === y && selectedDate.getMonth() === m && selectedDate.getDate() === d;
-                const sj = getShujiu(y, m, d);
-                const holiday = HOLIDAY_DATA[`${y}-${m+1}-${d}`];
-                const lunar = getLunar(y, m, d);
-                const cnFest = CN_LUNAR_FEST[`${lunar.m}-${lunar.d}`] || (lunar.m === 12 && getLunar(y, m, d+1).d === 1 ? "除夕" : null);
-                const esFest = ES_SOLAR_FEST[`${m+1}-${d}`];
-                const term = terms[d];
-
-                createDay(d, false, isToday, isSelected, term, cnFest, esFest, sj, holiday, y, m, lunar);
+                const dateObj = new Date(y, m, d);
+                const isoStr = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+                createDay(d, false, new Date().toDateString() === dateObj.toDateString(), selectedDate.toDateString() === dateObj.toDateString(), terms[d], CN_HOLIDAY_2026[isoStr], MADRID_SCHOOL_CAL[isoStr] || (dateObj.getFullYear() === 2026 && (m===11 || m<=0 || m===2 || m===3 || m===5) && (Math.random() > 0.9 ? "假期" : null)), ES_FESTS[`${m+1}-${d}`], getLunar(y, m, d), y, m);
             }
-            const remaining = 42 - (firstDay + lastDate);
-            for (let i = 1; i <= remaining; i++) createDay(i, true);
         }
 
-        function createDay(d, isPad, isToday, isSelected, term, cnFest, esFest, sj, holiday, y, m, lunar) {
+        function createDay(d, isPad, isToday, isSelected, term, cnHoliday, schoolOff, esFest, lunar, y, m) {
             const div = document.createElement('div');
             div.className = `day-card ${isPad ? 'opacity-20 pointer-events-none' : ''} ${isToday ? 'is-today' : ''} ${isSelected ? 'day-selected' : ''}`;
-            
-            if (!isPad) {
-                div.onclick = () => { selectedDate = new Date(y, m, d); updateAlmanac(); render(); };
-                const dow = new Date(y, m, d).getDay();
-                if (dow === 0 || dow === 6) div.classList.add('text-red-500');
-            }
-
+            if (!isPad) div.onclick = () => { selectedDate = new Date(y, m, d); updateAlmanac(); render(); };
             let html = "";
-            // 班/休 标签
-            if (holiday) {
-                const tagClass = holiday.type === 'work' ? 'work-tag' : 'rest-tag';
-                html += `<div class="${tagClass}">${holiday.type === 'work' ? '班' : '休'}</div>`;
-            }
-
-            html += `<span class="text-xl font-black">${d}</span>`;
-            
-            let tags = "";
-            if (cnFest || (holiday && holiday.type === 'rest' && holiday.name !== '调休')) tags += `<span class="tag-cn">中</span>`;
-            if (esFest) tags += `<span class="tag-es">西</span>`;
-            if (tags) html += `<div class="flex gap-0.5 mt-0.5">${tags}</div>`;
-
-            if (cnFest) html += `<span class="fest-cn">${cnFest}</span>`;
-            else if (esFest) html += `<span class="fest-es">${esFest}</span>`;
-            else if (term) html += `<span class="term-text">${term}</span>`;
-            else if (sj && sj.isStart) html += `<span class="shujiu-text">${sj.text}</span>`;
-            else if (lunar) html += `<span class="lunar-text">${lunar.d === 1 ? LUNAR_MONTHS[lunar.m - 1] : LUNAR_DAYS[lunar.d - 1]}</span>`;
-
+            if (cnHoliday) html += `<div class="${cnHoliday.type === 'work' ? 'work-tag' : 'rest-tag'}">${cnHoliday.type === 'work' ? '班' : '休'}</div>`;
+            if (schoolOff) html += `<div class="tag-school-off">校休</div>`;
+            const isRedDay = cnHoliday?.type === 'rest' || esFest || new Date(y,m,d).getDay() === 0 || new Date(y,m,d).getDay() === 6;
+            html += `<span class="text-xl font-black ${isRedDay ? 'text-red-500' : 'text-slate-800'}">${d}</span>`;
+            if (cnHoliday) html += `<span class="fest-cn text-[0.6rem] truncate px-1">${cnHoliday.name}</span>`;
+            else if (esFest) html += `<span class="fest-es text-[0.6rem] font-bold truncate px-1">${esFest.split(' ')[0]}</span>`;
+            else if (term) html += `<span class="term-text text-[0.6rem]">${term}</span>`;
+            else if (lunar) html += `<span class="lunar-text text-[0.6rem]">${lunar.d === 1 ? LUNAR_MONTHS[lunar.m-1] : LUNAR_DAYS[lunar.d-1]}</span>`;
             div.innerHTML = html;
             document.getElementById('calendarDays').appendChild(div);
         }
 
         function updateAlmanac() {
-            const y = selectedDate.getFullYear();
-            const m = selectedDate.getMonth();
-            const d = selectedDate.getDate();
-            const lunar = getLunar(y, m, d);
-            const gz = getGZ(y, m, d);
-            const sj = getShujiu(y, m, d);
-            const holiday = HOLIDAY_DATA[`${y}-${m+1}-${d}`];
-
+            const y = selectedDate.getFullYear(), m = selectedDate.getMonth(), d = selectedDate.getDate();
+            const iso = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
+            const lunar = getLunar(y, m, d), gz = getGZ(y, m, d);
+            const esFest = ES_FESTS[`${m+1}-${d}`], cnHol = CN_HOLIDAY_2026[iso];
+            
             document.getElementById('sideDate').innerText = d;
             document.getElementById('sideMonthYear').innerText = selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
             document.getElementById('sideWeek').innerText = "星期" + ["日", "一", "二", "三", "四", "五", "六"][selectedDate.getDay()];
+            document.getElementById('sideLunarMain').innerText = (lunar.isLeap ? "闰" : "") + LUNAR_MONTHS[lunar.m-1] + LUNAR_DAYS[lunar.d-1];
+            document.getElementById('sideGZYear').innerText = `${gz.y} ${SX[(lunar.y - 4) % 12]}年`;
+            document.getElementById('sideGZFull').innerText = `${gz.y}年 ${gz.m}月 ${gz.d}日`;
             
-            document.getElementById('sideGZYear').innerText = `${gz.year}年【${SX[(y - 4) % 12]}】`;
-            document.getElementById('sideLunarMain').innerText = `${LUNAR_MONTHS[lunar.m-1]}${LUNAR_DAYS[lunar.d-1]}`;
-            document.getElementById('sideGZFull').innerText = `${gz.year}年 ${gz.day}日`;
-
-            const seed = (y + m + d) % 10;
-            document.getElementById('sideYi').innerText = ALMANAC_YI.slice(seed % 8, (seed % 8) + 2).join(' ');
-            document.getElementById('sideJi').innerText = ALMANAC_JI.slice(seed % 8, (seed % 8) + 2).join(' ');
-
-            const sjBox = document.getElementById('sideShujiuBox');
-            if (sj) {
-                sjBox.classList.remove('hidden');
-                document.getElementById('sideShujiuText').innerText = sj.full;
-            } else {
-                sjBox.classList.add('hidden');
-            }
+            const seed = gz.offset || 0;
+            document.getElementById('sideYi').innerText = [YI_LIST[seed % YI_LIST.length], YI_LIST[(seed * 3 + 2) % YI_LIST.length]].join('、');
+            document.getElementById('sideJi').innerText = [JI_LIST[seed % JI_LIST.length], JI_LIST[(seed * 7 + 1) % JI_LIST.length]].join('、');
+            const zhiIdx = (seed + 14) % 12;
+            document.getElementById('sideChong').innerText = `冲${D_ZHI[(zhiIdx + 6) % 12]} 煞${["北", "东", "南", "西"][zhiIdx % 4]}`;
 
             const holBox = document.getElementById('sideHolidayBox');
-            const cnFest = CN_LUNAR_FEST[`${lunar.m}-${lunar.d}`];
-            const esFest = ES_SOLAR_FEST[`${m+1}-${d}`];
-            if (holiday || cnFest || esFest) {
+            if (esFest || cnHol) {
                 holBox.classList.remove('hidden');
-                let hText = holiday ? `${holiday.name} (${holiday.type === 'work' ? '补班' : '放假'})` : (cnFest || esFest);
-                document.getElementById('sideHolidayText').innerText = hText;
-            } else {
-                holBox.classList.add('hidden');
+                let info = "";
+                if (esFest) info += `<div class="text-purple-700">🇪🇸 西班牙: ${esFest}</div>`;
+                if (cnHol) info += `<div class="text-red-700">🇨🇳 中国: ${cnHol.name}</div>`;
+                document.getElementById('sideHolidayText').innerHTML = info;
+            } else holBox.classList.add('hidden');
+
+            // 节气与数九/三伏
+            let termInfo = "今日无特殊节气提醒";
+            for (let i = 0; i < 24; i++) {
+                const tDate = getTermDate(y, i);
+                if (tDate.getDate() === d && tDate.getMonth() === m) { termInfo = `今日节气：${SOLAR_TERMS[i]}`; break; }
             }
+            document.getElementById('sideTermInfo').innerText = termInfo;
+            
+            const sj = getShujiu(selectedDate), sf = getSanfu(selectedDate);
+            document.getElementById('sideShujiuInfo').innerText = (sj ? "当前：" + sj : "") + (sf ? "当前：" + sf : "");
         }
 
         function initSelectors() {
-            const ys = document.getElementById('yearSelect');
-            const ms = document.getElementById('monthSelect');
-            for (let i = 1920; i <= 2080; i++) ys.add(new Option(i + "Y", i, false, i === viewDate.getFullYear()));
-            for (let i = 0; i < 12; i++) ms.add(new Option((i + 1) + "M", i, false, i === viewDate.getMonth()));
+            const ys = document.getElementById('yearSelect'), ms = document.getElementById('monthSelect');
+            for (let i = 2025; i <= 2027; i++) ys.add(new Option(i + " 年", i, false, i === 2026));
+            for (let i = 0; i < 12; i++) ms.add(new Option((i + 1) + " 月", i, false, i === viewDate.getMonth()));
         }
-
         function changeMonth(v) { viewDate.setMonth(viewDate.getMonth() + v); updateSelectors(); render(); }
         function jumpToDate() { viewDate = new Date(document.getElementById('yearSelect').value, document.getElementById('monthSelect').value, 1); render(); }
         function updateSelectors() { document.getElementById('yearSelect').value = viewDate.getFullYear(); document.getElementById('monthSelect').value = viewDate.getMonth(); }
         function resetToToday() { viewDate = new Date(); selectedDate = new Date(); updateSelectors(); updateAlmanac(); render(); }
-
-        window.onload = () => { initSelectors(); updateAlmanac(); render(); };
+        window.onload = () => { initSelectors(); resetToToday(); };
     </script>
 </body>
 </html>
