@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>中西合璧万年历 - 马德里 25-26 官方校历版</title>
+    <title>中西合璧万年历 - 马德里 25-26 官方校历权威版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Inter:wght@400;600&display=swap');
@@ -137,8 +137,9 @@
         const LUNAR_DAYS = ["初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十"];
         const ST_DATA = [0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693, 263343, 285961, 308463, 330788, 352819, 374543, 395920, 416905, 437485, 457653, 477414, 496773];
 
-        // 2026年中国节假日
-        const CN_HOLIDAY_2026 = { 
+        // 2025-2026年中国节假日
+        const CN_HOLIDAY = { 
+            "2025-10-01": { name: "国庆节", type: "rest" },
             "2026-01-01": { name: "元旦", type: "rest" }, 
             "2026-02-16": { name: "除夕", type: "rest" }, 
             "2026-02-17": { name: "春节", type: "rest" }, 
@@ -147,53 +148,50 @@
             "2026-02-20": { name: "初四", type: "rest" }, 
             "2026-02-21": { name: "初五", type: "rest" }, 
             "2026-02-22": { name: "初六", type: "rest" }, 
-            "2026-04-05": { name: "清明", type: "rest" }, 
+            "2026-04-05": { name: "清明节", type: "rest" }, 
             "2026-05-01": { name: "劳动节", type: "rest" } 
         };
 
-        // 马德里 25-26 官方校历数据集
-        const MADRID_SCHOOL_CAL = { 
-            // 2025年部分
-            "2025-10-31": "非教学日",
-            "2025-12-05": "非教学日",
-            // 2026年精确非教学日
-            "2026-02-13": "非教学日 (Semana Blanca)", 
-            "2026-02-16": "非教学日 (白周/除夕)", 
-            "2026-03-02": "非教学日", 
-            "2026-05-04": "非教学日",
-            "2026-03-27": "非教学日 (圣周开始)"
+        // 马德里 25-26 官方校历：非教学日 (Otros días sin actividad lectiva)
+        const MADRID_NO_LECTIVO = { 
+            "2025-10-13": "非教学日 (Puente Pilar)",
+            "2025-11-03": "非教学日 (Puente Todos los Santos)",
+            "2026-01-07": "非教学日 (Extensión Navidad)",
+            "2026-03-27": "非教学日 (Previo Semana Santa)",
+            "2026-04-06": "非教学日 (Lunes Pascua no lectivo)"
         };
 
-        // 马德里官方长假逻辑判定函数
-        function isMadridSchoolHoliday(y, m, d) {
+        // 官方指定假期区间逻辑
+        function getMadridSpecialInfo(y, m, d) {
             const date = new Date(y, m, d);
             const time = date.getTime();
             
-            // 圣诞假期 (2025-12-22 到 2026-01-07)
-            const xMasStart = new Date(2025, 11, 22).getTime();
-            const xMasEnd = new Date(2026, 0, 7).getTime();
-            if (time >= xMasStart && time <= xMasEnd) return "圣诞假期";
+            // 圣诞假期 (Navidad): 2025-12-20 到 2026-01-06
+            const xMasStart = new Date(2025, 11, 20).getTime();
+            const xMasEnd = new Date(2026, 0, 6).getTime();
+            if (time >= xMasStart && time <= xMasEnd) return "圣诞假期 (Navidad)";
 
-            // 圣周假期 (2026-03-27 到 2026-04-06)
-            const easterStart = new Date(2026, 2, 27).getTime();
-            const easterEnd = new Date(2026, 3, 6).getTime();
-            if (time >= easterStart && time <= easterEnd) return "圣周假期";
+            // 圣周假期 (Semana Santa): 2026-03-28 到 2026-04-05
+            const easterStart = new Date(2026, 2, 28).getTime();
+            const easterEnd = new Date(2026, 3, 5).getTime();
+            if (time >= easterStart && time <= easterEnd) return "圣周假期 (Semana Santa)";
 
-            // 夏季假期起点 (2026-06-23之后)
-            const summerStart = new Date(2026, 5, 23).getTime();
-            if (y === 2026 && time >= summerStart && m < 8) return "暑假";
+            // 暑假起止
+            const summerStart = new Date(2026, 5, 20).getTime();
+            if (y === 2026 && time >= summerStart && m < 8) return "暑假 (Vacaciones de Verano)";
 
-            return MADRID_SCHOOL_CAL[`${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`] || null;
+            return MADRID_NO_LECTIVO[`${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`] || null;
         }
 
         const ES_FESTS = { 
-            "1-1": "Año Nuevo", 
-            "1-6": "Epifanía", 
-            "3-19": "San José", 
-            "4-2": "Jueves Santo", 
-            "4-3": "Viernes Santo", 
-            "5-1": "Trabajo", 
-            "5-2": "Comunidad de Madrid" 
+            "2025-12-8": "Inmaculada Concepción",
+            "2026-1-1": "Año Nuevo", 
+            "2026-1-6": "Epifanía del Señor", 
+            "2026-3-19": "San José", 
+            "2026-4-2": "Jueves Santo", 
+            "2026-4-3": "Viernes Santo", 
+            "2026-5-1": "Fiesta del Trabajo", 
+            "2026-5-2": "Fiesta Comunidad de Madrid" 
         };
 
         const YI_LIST = ["祭祀", "祈福", "求嗣", "开光", "解除", "伐木", "出火", "入宅", "移徙", "安床", "修造", "动土", "上梁", "纳畜", "安葬", "修坟", "立碑", "破土", "成服", "除服", "移柩", "启钻"];
@@ -289,8 +287,8 @@
             for (let i = firstDay; i > 0; i--) createDay(prevLastDate - i + 1, true);
             for (let d = 1; d <= lastDate; d++) {
                 const isoStr = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
-                const schoolOff = isMadridSchoolHoliday(y, m, d);
-                createDay(d, false, new Date().toDateString() === new Date(y,m,d).toDateString(), selectedDate.toDateString() === new Date(y,m,d).toDateString(), terms[d], CN_HOLIDAY_2026[isoStr], schoolOff, ES_FESTS[`${m+1}-${d}`], getLunar(y, m, d), y, m);
+                const schoolOff = getMadridSpecialInfo(y, m, d);
+                createDay(d, false, new Date().toDateString() === new Date(y,m,d).toDateString(), selectedDate.toDateString() === new Date(y,m,d).toDateString(), terms[d], CN_HOLIDAY[isoStr], schoolOff, ES_FESTS[`${y}-${m+1}-${d}`], getLunar(y, m, d), y, m);
             }
         }
 
@@ -318,7 +316,7 @@
             const y = selectedDate.getFullYear(), m = selectedDate.getMonth(), d = selectedDate.getDate();
             const iso = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
             const lunar = getLunar(y, m, d), gz = getGZ(y, m, d);
-            const esFest = ES_FESTS[`${m+1}-${d}`], cnHol = CN_HOLIDAY_2026[iso], schoolOff = isMadridSchoolHoliday(y, m, d);
+            const esFest = ES_FESTS[`${y}-${m+1}-${d}`], cnHol = CN_HOLIDAY[iso], schoolOff = getMadridSpecialInfo(y, m, d);
             
             document.getElementById('sideDate').innerText = d;
             document.getElementById('sideMonthYear').innerText = selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -337,7 +335,7 @@
                 holBox.classList.remove('hidden');
                 let info = "";
                 if (esFest) info += `<div class="text-purple-700">🇪🇸 公众假期: ${esFest}</div>`;
-                if (schoolOff) info += `<div class="text-amber-700 font-bold">🏫 马德里校假: ${schoolOff}</div>`;
+                if (schoolOff) info += `<div class="text-amber-700 font-bold">🏫 马德里校休: ${schoolOff}</div>`;
                 if (cnHol) info += `<div class="text-red-700">🇨🇳 中国节假日: ${cnHol.name}</div>`;
                 document.getElementById('sideHolidayText').innerHTML = info;
             } else holBox.classList.add('hidden');
