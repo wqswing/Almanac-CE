@@ -1,0 +1,546 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { 
+  Plus, 
+  Minus, 
+  Edit3, 
+  Trash2, 
+  Download, 
+  Upload, 
+  ZoomIn, 
+  ZoomOut, 
+  Users, 
+  Heart,
+  ChevronDown,
+  X,
+  Move
+} from 'lucide-react';
+
+// --- 初始演示数据 ---
+const INITIAL_DATA = {
+  id: 'root',
+  name: '王祖父',
+  title: '家族始祖',
+  gender: 'male',
+  partner: '李祖母',
+  children: [
+    {
+      id: 'c1',
+      name: '王大伯',
+      title: '长子',
+      gender: 'male',
+      partner: '张大妈',
+      children: [
+        {
+          id: 'c1-1',
+          name: '王堂兄',
+          title: '长孙',
+          gender: 'male',
+          children: []
+        }
+      ]
+    },
+    {
+      id: 'c2',
+      name: '王父亲',
+      title: '次子',
+      gender: 'male',
+      partner: '陈母亲',
+      children: [
+        {
+          id: 'c2-1',
+          name: '王小明',
+          title: '我',
+          gender: 'male',
+          children: []
+        },
+        {
+          id: 'c2-2',
+          name: '王小妹',
+          title: '妹妹',
+          gender: 'female',
+          children: []
+        }
+      ]
+    }
+  ]
+};
+
+// --- 工具函数 ---
+const generateId = () => Math.random().toString(36).substr(2, 9);
+
+const updateNodeInTree = (node, nodeId, newData) => {
+  if (node.id === nodeId) {
+    return { ...node, ...newData };
+  }
+  if (node.children) {
+    return {
+      ...node,
+      children: node.children.map(child => updateNodeInTree(child, nodeId, newData))
+    };
+  }
+  return node;
+};
+
+const addChildToTree = (node, parentId, newChild) => {
+  if (node.id === parentId) {
+    return {
+      ...node,
+      children: [...(node.children || []), newChild]
+    };
+  }
+  if (node.children) {
+    return {
+      ...node,
+      children: node.children.map(child => addChildToTree(child, parentId, newChild))
+    };
+  }
+  return node;
+};
+
+const deleteNodeFromTree = (node, nodeIdToDelete) => {
+  if (node.children) {
+    const filteredChildren = node.children.filter(c => c.id !== nodeIdToDelete);
+    if (filteredChildren.length !== node.children.length) {
+      return { ...node, children: filteredChildren };
+    }
+    return {
+      ...node,
+      children: node.children.map(child => deleteNodeFromTree(child, nodeIdToDelete))
+    };
+  }
+  return node;
+};
+
+// --- 组件部分 ---
+
+// 独立的卡片组件，用于渲染主节点或配偶节点
+const NodeCard = ({ name, title, gender, onClick, isPartner = false }) => {
+  const isMale = gender === 'male';
+  
+  // 样式配置
+  const cardBaseStyle = `
+    relative group cursor-pointer transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl
+    w-40 p-3 rounded-xl border-2 shadow-md flex flex-col items-center gap-2
+  `;
+  
+  const colorStyle = isMale 
+    ? "bg-slate-50 border-slate-200 hover:border-blue-400" 
+    : "bg-rose-50 border-rose-200 hover:border-rose-400";
+    
+  const iconColor = isMale ? "text-blue-500" : "text-rose-500";
+  const roleBg = isMale ? "bg-blue-100 text-blue-700" : "bg-rose-100 text-rose-700";
+
+  return (
+    <div 
+      onClick={(e) => { e.stopPropagation(); onClick && onClick(); }}
+      className={`${cardBaseStyle} ${colorStyle}`}
+    >
+      {/* 头像 */}
+      <div className={`w-10 h-10 rounded-full flex items-center justify-center bg-white shadow-sm border ${isMale ? 'border-blue-100' : 'border-rose-100'}`}>
+        <Users size={20} className={iconColor} />
+      </div>
+      
+      {/* 文本信息 */}
+      <div className="text-center w-full">
+        <div className="font-bold text-slate-800 text-base truncate px-1">{name || '未命名'}</div>
+        <div className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-semibold mt-1 ${roleBg}`}>
+          {title}
+        </div>
+      </div>
+
+      {/* 编辑图标提示 */}
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="bg-white p-1 rounded-full shadow-sm border border-slate-100 text-slate-400">
+          <Edit3 size={10} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 编辑模态框
+const EditModal = ({ isOpen, onClose, data, onSave, onDelete, onAddChild }) => {
+  const [formData, setFormData] = useState({ name: '', title: '', gender: 'male', partner: '' });
+
+  useEffect(() => {
+    if (data) {
+      setFormData({
+        name: data.name || '',
+        title: data.title || '',
+        gender: data.gender || 'male',
+        partner: data.partner || ''
+      });
+    }
+  }, [data]);
+
+  if (!isOpen || !data) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4" onClick={(e) => e.stopPropagation()}>
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+        <div className="bg-slate-50 px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+          <h3 className="text-lg font-bold text-slate-800 flex items-center gap-2">
+            <Edit3 size={18} /> 编辑家庭信息
+          </h3>
+          <button onClick={onClose} className="text-slate-400 hover:text-slate-600 transition-colors">
+            <X size={20} />
+          </button>
+        </div>
+        
+        <div className="p-6 space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">主节点姓名</label>
+              <input 
+                type="text" 
+                value={formData.name}
+                onChange={e => setFormData({...formData, name: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                placeholder="输入姓名"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">配偶姓名</label>
+              <input 
+                type="text" 
+                value={formData.partner}
+                onChange={e => setFormData({...formData, partner: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                placeholder="输入配偶姓名"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">称谓/角色</label>
+              <input 
+                type="text" 
+                value={formData.title}
+                onChange={e => setFormData({...formData, title: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all"
+                placeholder="例如：长子"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-slate-600 mb-1">主节点性别</label>
+              <select 
+                value={formData.gender}
+                onChange={e => setFormData({...formData, gender: e.target.value})}
+                className="w-full px-4 py-2 rounded-lg border border-slate-200 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 outline-none transition-all bg-white"
+              >
+                <option value="male">男性</option>
+                <option value="female">女性</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="pt-4 flex flex-col gap-3">
+            <button 
+              onClick={() => onSave(formData)}
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-medium shadow-md shadow-indigo-200 transition-all active:scale-95"
+            >
+              保存更改
+            </button>
+            
+            <div className="grid grid-cols-2 gap-3">
+              <button 
+                onClick={onAddChild}
+                className="flex items-center justify-center gap-2 py-2 bg-emerald-50 text-emerald-600 hover:bg-emerald-100 rounded-lg font-medium transition-colors border border-emerald-200"
+              >
+                <Plus size={16} /> 添加后代
+              </button>
+              {data.id !== 'root' && (
+                <button 
+                  onClick={onDelete}
+                  className="flex items-center justify-center gap-2 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-lg font-medium transition-colors border border-rose-200"
+                >
+                  <Trash2 size={16} /> 删除节点
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// 树节点组件
+const TreeNode = ({ node, onNodeClick }) => {
+  const hasChildren = node.children && node.children.length > 0;
+  
+  // 简单推断配偶性别（与主节点相反）
+  const partnerGender = node.gender === 'male' ? 'female' : 'male';
+
+  return (
+    <div className="flex flex-col items-center">
+      {/* 核心节点区域：包含主节点和可能的配偶节点 */}
+      <div className="flex items-center gap-1 z-10">
+        <NodeCard 
+          name={node.name}
+          title={node.title}
+          gender={node.gender}
+          onClick={() => onNodeClick(node)}
+        />
+
+        {/* 如果有配偶，显示连接线和配偶卡片 */}
+        {node.partner && (
+          <>
+            <div className="w-8 flex items-center justify-center relative">
+               <div className="w-full h-0.5 bg-slate-300"></div>
+               <Heart size={14} className="text-rose-400 fill-rose-100 absolute bg-slate-100 rounded-full p-0.5" />
+            </div>
+            <NodeCard 
+              name={node.partner}
+              title="配偶"
+              gender={partnerGender}
+              isPartner={true}
+              onClick={() => onNodeClick(node)}
+            />
+          </>
+        )}
+      </div>
+
+      {/* 子树连接线 */}
+      {hasChildren && (
+        <div className="flex flex-col items-center">
+          {/* 垂直引线，从夫妻组合的中心落下 */}
+          <div className="h-8 w-px bg-slate-300"></div>
+          
+          <div className="flex relative">
+            {/* 只有当有多个孩子时才需要顶部的水平连线 */}
+            {node.children.length > 1 && (
+               <div className="absolute top-0 left-1/2 -translate-x-1/2 h-px bg-slate-300 w-full" 
+                    style={{ width: `calc(100% - 10rem)` }}> 
+                    {/* 这里的宽度计算稍微复杂，取决于子节点的宽度，简单处理 */}
+               </div>
+            )}
+
+            <div className="flex gap-10 pt-0">
+               {node.children.map((child, index) => (
+                 <div key={child.id} className="flex flex-col items-center relative">
+                   {/* 每个子节点上方的连接线结构 */}
+                   <div className="h-8 w-full flex relative">
+                      {/* 左侧遮罩线 */}
+                      <div className={`flex-1 ${index === 0 && node.children.length > 1 ? 'invisible' : ''} ${node.children.length === 1 ? 'invisible' : 'border-t border-slate-300'}`}></div>
+                      {/* 垂直线 */}
+                      <div className="w-px bg-slate-300 h-full"></div>
+                      {/* 右侧遮罩线 */}
+                      <div className={`flex-1 ${index === node.children.length - 1 && node.children.length > 1 ? 'invisible' : ''} ${node.children.length === 1 ? 'invisible' : 'border-t border-slate-300'}`}></div>
+                   </div>
+
+                   <TreeNode node={child} onNodeClick={onNodeClick} />
+                 </div>
+               ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+// 主应用组件
+const FamilyTreeApp = () => {
+  const [treeData, setTreeData] = useState(INITIAL_DATA);
+  const [scale, setScale] = useState(1);
+  const [selectedNode, setSelectedNode] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const fileInputRef = useRef(null);
+  
+  // 拖拽相关状态
+  const containerRef = useRef(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startPos, setStartPos] = useState({ x: 0, y: 0 });
+  const [scrollPos, setScrollPos] = useState({ x: 0, y: 0 });
+
+  const handleNodeClick = (node) => {
+    setSelectedNode(node);
+    setIsModalOpen(true);
+  };
+
+  const handleSaveNode = (formData) => {
+    setTreeData(prev => updateNodeInTree(prev, selectedNode.id, formData));
+    setIsModalOpen(false);
+  };
+
+  const handleAddChild = () => {
+    const newChild = {
+      id: generateId(),
+      name: '新成员',
+      title: '后代',
+      gender: 'male',
+      children: []
+    };
+    setTreeData(prev => addChildToTree(prev, selectedNode.id, newChild));
+    setIsModalOpen(false);
+  };
+
+  const handleDeleteNode = () => {
+    if (selectedNode.id === 'root') {
+      alert("不能删除根节点！");
+      return;
+    }
+    if (confirm(`确定要删除 "${selectedNode.name}" 及其所有后代吗？`)) {
+      setTreeData(prev => deleteNodeFromTree(prev, selectedNode.id));
+      setIsModalOpen(false);
+    }
+  };
+
+  const handleExport = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(treeData));
+    const downloadAnchorNode = document.createElement('a');
+    downloadAnchorNode.setAttribute("href", dataStr);
+    downloadAnchorNode.setAttribute("download", "family_tree.json");
+    document.body.appendChild(downloadAnchorNode);
+    downloadAnchorNode.click();
+    downloadAnchorNode.remove();
+  };
+
+  const handleImport = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
+          setTreeData(json);
+        } catch (error) {
+          alert("文件格式错误！");
+        }
+      };
+      reader.readAsText(file);
+    }
+  };
+
+  // 拖拽逻辑
+  const handleMouseDown = (e) => {
+    if (e.target.closest('button') || e.target.closest('.group')) return; // .group is the card hover class
+    
+    setIsDragging(true);
+    setStartPos({ x: e.clientX, y: e.clientY });
+    if (containerRef.current) {
+      setScrollPos({ 
+        x: containerRef.current.scrollLeft, 
+        y: containerRef.current.scrollTop 
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDragging || !containerRef.current) return;
+    e.preventDefault();
+    const dx = e.clientX - startPos.x;
+    const dy = e.clientY - startPos.y;
+    containerRef.current.scrollLeft = scrollPos.x - dx;
+    containerRef.current.scrollTop = scrollPos.y - dy;
+  };
+
+  const handleMouseUp = () => {
+    setIsDragging(false);
+  };
+
+  return (
+    <div className="flex flex-col h-screen bg-slate-100 font-sans text-slate-900 overflow-hidden select-none">
+      {/* 顶部工具栏 */}
+      <header className="bg-white border-b border-slate-200 shadow-sm z-10 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="bg-indigo-600 p-2 rounded-lg text-white">
+            <Users size={24} />
+          </div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-800">家族族谱生成器</h1>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex items-center bg-slate-100 rounded-lg p-1 border border-slate-200">
+            <button 
+              onClick={() => setScale(s => Math.max(0.2, s - 0.1))}
+              className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-600"
+              title="缩小"
+            >
+              <ZoomOut size={18} />
+            </button>
+            <span className="w-16 text-center text-sm font-medium text-slate-600">
+              {Math.round(scale * 100)}%
+            </span>
+            <button 
+              onClick={() => setScale(s => Math.min(2, s + 0.1))}
+              className="p-2 hover:bg-white hover:shadow-sm rounded-md transition-all text-slate-600"
+              title="放大"
+            >
+              <ZoomIn size={18} />
+            </button>
+          </div>
+
+          <div className="h-8 w-px bg-slate-200"></div>
+
+          <button 
+            onClick={handleExport}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-300 rounded-lg hover:bg-slate-50 hover:border-slate-400 text-slate-700 transition-all text-sm font-medium"
+          >
+            <Download size={16} /> 导出
+          </button>
+          
+          <button 
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 shadow-md shadow-indigo-200 transition-all text-sm font-medium"
+          >
+            <Upload size={16} /> 导入
+          </button>
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            onChange={handleImport} 
+            className="hidden" 
+            accept=".json" 
+          />
+        </div>
+      </header>
+
+      {/* 主画布区域 */}
+      <main 
+        ref={containerRef}
+        className={`flex-1 overflow-auto bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] relative flex ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <div className="min-w-fit min-h-full m-auto p-20 flex flex-col items-center origin-top">
+          <div 
+            style={{ 
+              transform: `scale(${scale})`,
+              transformOrigin: 'top center',
+              minWidth: '100%'
+            }}
+            className="transition-transform duration-200 ease-out"
+          >
+            <TreeNode 
+              node={treeData} 
+              onNodeClick={handleNodeClick} 
+            />
+          </div>
+        </div>
+      </main>
+      
+      {/* 底部提示 */}
+      <div className="fixed bottom-6 right-6 bg-white/80 backdrop-blur px-4 py-2 rounded-full shadow-lg border border-slate-200 text-xs text-slate-500 pointer-events-none flex items-center gap-2">
+        <Move size={12} />
+        按住拖拽画布 • 点击任意节点编辑
+      </div>
+
+      {/* 编辑弹窗 */}
+      <EditModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        data={selectedNode}
+        onSave={handleSaveNode}
+        onDelete={handleDeleteNode}
+        onAddChild={handleAddChild}
+      />
+    </div>
+  );
+};
+
+export default FamilyTreeApp;
