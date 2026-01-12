@@ -119,7 +119,7 @@
                              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"/></svg>
                              <span id="sideTermInfo">今日无特殊节气提醒</span>
                         </div>
-                        <div id="sideShujiuInfo" class="text-blue-600 pl-6"></div>
+                        <div id="sideShujiuInfo" class="text-blue-600 font-bold pl-6"></div>
                     </div>
                 </div>
             </div>
@@ -137,14 +137,69 @@
         const LUNAR_DAYS = ["初一", "初二", "初三", "初四", "初五", "初六", "初七", "初八", "初九", "初十", "十一", "十二", "十三", "十四", "十五", "十六", "十七", "十八", "十九", "二十", "廿一", "廿二", "廿三", "廿四", "廿五", "廿六", "廿七", "廿八", "廿九", "三十"];
         const ST_DATA = [0, 21208, 42467, 63836, 85337, 107014, 128867, 150921, 173149, 195551, 218072, 240693, 263343, 285961, 308463, 330788, 352819, 374543, 395920, 416905, 437485, 457653, 477414, 496773];
 
-        const CN_HOLIDAY_2026 = { "2026-01-01": { name: "元旦", type: "rest" }, "2026-02-16": { name: "除夕", type: "rest" }, "2026-02-17": { name: "春节", type: "rest" }, "2026-02-18": { name: "初二", type: "rest" }, "2026-02-19": { name: "初三", type: "rest" }, "2026-02-20": { name: "初四", type: "rest" }, "2026-02-21": { name: "初五", type: "rest" }, "2026-02-22": { name: "初六", type: "rest" }, "2026-04-05": { name: "清明", type: "rest" }, "2026-05-01": { name: "劳动节", type: "rest" } };
-        const MADRID_SCHOOL_CAL = { "2025-10-31": "非教学日", "2025-12-05": "非教学日", "2026-02-13": "非教学日 (白周)", "2026-02-16": "非教学日 (白周/除夕)", "2026-03-02": "非教学日", "2026-05-04": "非教学日" };
-        const ES_FESTS = { "1-1": "Año Nuevo", "1-6": "Epifanía", "3-19": "San José", "4-2": "Jueves Santo", "4-3": "Viernes Santo", "5-1": "Trabajo", "5-2": "Comunidad de Madrid" };
+        // 2026年中国节假日
+        const CN_HOLIDAY_2026 = { 
+            "2026-01-01": { name: "元旦", type: "rest" }, 
+            "2026-02-16": { name: "除夕", type: "rest" }, 
+            "2026-02-17": { name: "春节", type: "rest" }, 
+            "2026-02-18": { name: "初二", type: "rest" }, 
+            "2026-02-19": { name: "初三", type: "rest" }, 
+            "2026-02-20": { name: "初四", type: "rest" }, 
+            "2026-02-21": { name: "初五", type: "rest" }, 
+            "2026-02-22": { name: "初六", type: "rest" }, 
+            "2026-04-05": { name: "清明", type: "rest" }, 
+            "2026-05-01": { name: "劳动节", type: "rest" } 
+        };
+
+        // 马德里 25-26 官方校历数据集
+        const MADRID_SCHOOL_CAL = { 
+            // 2025年部分
+            "2025-10-31": "非教学日",
+            "2025-12-05": "非教学日",
+            // 2026年精确非教学日
+            "2026-02-13": "非教学日 (Semana Blanca)", 
+            "2026-02-16": "非教学日 (白周/除夕)", 
+            "2026-03-02": "非教学日", 
+            "2026-05-04": "非教学日",
+            "2026-03-27": "非教学日 (圣周开始)"
+        };
+
+        // 马德里官方长假逻辑判定函数
+        function isMadridSchoolHoliday(y, m, d) {
+            const date = new Date(y, m, d);
+            const time = date.getTime();
+            
+            // 圣诞假期 (2025-12-22 到 2026-01-07)
+            const xMasStart = new Date(2025, 11, 22).getTime();
+            const xMasEnd = new Date(2026, 0, 7).getTime();
+            if (time >= xMasStart && time <= xMasEnd) return "圣诞假期";
+
+            // 圣周假期 (2026-03-27 到 2026-04-06)
+            const easterStart = new Date(2026, 2, 27).getTime();
+            const easterEnd = new Date(2026, 3, 6).getTime();
+            if (time >= easterStart && time <= easterEnd) return "圣周假期";
+
+            // 夏季假期起点 (2026-06-23之后)
+            const summerStart = new Date(2026, 5, 23).getTime();
+            if (y === 2026 && time >= summerStart && m < 8) return "暑假";
+
+            return MADRID_SCHOOL_CAL[`${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`] || null;
+        }
+
+        const ES_FESTS = { 
+            "1-1": "Año Nuevo", 
+            "1-6": "Epifanía", 
+            "3-19": "San José", 
+            "4-2": "Jueves Santo", 
+            "4-3": "Viernes Santo", 
+            "5-1": "Trabajo", 
+            "5-2": "Comunidad de Madrid" 
+        };
 
         const YI_LIST = ["祭祀", "祈福", "求嗣", "开光", "解除", "伐木", "出火", "入宅", "移徙", "安床", "修造", "动土", "上梁", "纳畜", "安葬", "修坟", "立碑", "破土", "成服", "除服", "移柩", "启钻"];
         const JI_LIST = ["开市", "交易", "挂匾", "掘井", "乘船", "词讼", "置产", "作灶", "经络", "栽种", "安门", "行丧", "出行", "嫁娶", "入殓", "动土"];
 
-        // --- 辅助函数 ---
+        // --- 核心算法 ---
         function getLunar(year, month, day) {
             let offset = (Date.UTC(year, month, day) - Date.UTC(1900, 0, 31)) / 86400000;
             let i, leap = 0, temp = 0;
@@ -182,44 +237,34 @@
             return { y: yearGZ, m: monthGZ, d: dayGZ, offset: offsetDays };
         }
 
-        // 数九计算
         function getShujiu(date) {
             const year = date.getFullYear();
-            // 找去年的冬至 (n=23)
             let dongzhi = getTermDate(year - 1, 23);
             if (date < dongzhi) dongzhi = getTermDate(year - 2, 23);
-            
             const diff = Math.floor((date.getTime() - dongzhi.setHours(0,0,0,0)) / 86400000);
             if (diff >= 0 && diff < 81) {
-                const jiunumber = Math.floor(diff / 9) + 1;
-                const dayInJiu = (diff % 9) + 1;
                 const jiuNames = ["一九", "二九", "三九", "四九", "五九", "六九", "七九", "八九", "九九"];
-                return `${jiuNames[jiunumber-1]} 第 ${dayInJiu} 天`;
+                return `${jiuNames[Math.floor(diff/9)]} 第${(diff%9)+1}天`;
             }
             return null;
         }
 
-        // 三伏计算 (简易版：夏至后第三个庚日为初伏)
         function getSanfu(date) {
             const year = date.getFullYear();
-            const xiazhi = getTermDate(year, 11); // 夏至 n=11
-            // 简单估算，庚日每10天一次
+            const xiazhi = getTermDate(year, 11);
             const baseDate = new Date(1900, 0, 31);
-            const getGeng = (d) => (Math.floor((d.getTime() - baseDate.getTime()) / 86400000) + 40) % 10 === 6;
-            
-            let firstGeng = new Date(xiazhi);
-            while(!getGeng(firstGeng)) firstGeng.setDate(firstGeng.getDate() + 1);
-            
-            const chuFu = new Date(firstGeng); chuFu.setDate(chuFu.getDate() + 20); // 第三个庚日
-            const zhongFu = new Date(chuFu); zhongFu.setDate(zhongFu.getDate() + 10);
-            const liqiu = getTermDate(year, 14); // 立秋 n=14
-            let moFuStart = new Date(liqiu);
-            while(!getGeng(moFuStart)) moFuStart.setDate(moFuStart.getDate() + 1);
-            
-            const curTime = date.setHours(0,0,0,0);
-            if (curTime >= chuFu.getTime() && curTime < chuFu.getTime() + 10*86400000) return `初伏 第${Math.floor((curTime-chuFu)/86400000)+1}天`;
-            if (curTime >= zhongFu.getTime() && curTime < moFuStart.getTime()) return `中伏 第${Math.floor((curTime-zhongFu)/86400000)+1}天`;
-            if (curTime >= moFuStart.getTime() && curTime < moFuStart.getTime() + 10*86400000) return `末伏 第${Math.floor((curTime-moFuStart)/86400000)+1}天`;
+            const isGeng = (d) => (Math.floor((d.getTime() - baseDate.getTime()) / 86400000) + 40) % 10 === 6;
+            let gCount = 0, firstGeng = new Date(xiazhi);
+            while(gCount < 3) { if(isGeng(firstGeng)) gCount++; if(gCount<3) firstGeng.setDate(firstGeng.getDate()+1); }
+            const chuFu = new Date(firstGeng);
+            const zhongFu = new Date(chuFu); zhongFu.setDate(chuFu.getDate()+10);
+            const liqiu = getTermDate(year, 14);
+            let moFu = new Date(liqiu);
+            while(!isGeng(moFu)) moFu.setDate(moFu.getDate()+1);
+            const t = date.setHours(0,0,0,0);
+            if(t >= chuFu.getTime() && t < chuFu.getTime()+10*86400) return `初伏 第${Math.floor((t-chuFu)/86400000)+1}天`;
+            if(t >= zhongFu.getTime() && t < moFu.getTime()) return `中伏 第${Math.floor((t-zhongFu)/86400000)+1}天`;
+            if(t >= moFu.getTime() && t < moFu.getTime()+10*86400) return `末伏 第${Math.floor((t-moFu)/86400000)+1}天`;
             return null;
         }
 
@@ -243,9 +288,9 @@
 
             for (let i = firstDay; i > 0; i--) createDay(prevLastDate - i + 1, true);
             for (let d = 1; d <= lastDate; d++) {
-                const dateObj = new Date(y, m, d);
                 const isoStr = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
-                createDay(d, false, new Date().toDateString() === dateObj.toDateString(), selectedDate.toDateString() === dateObj.toDateString(), terms[d], CN_HOLIDAY_2026[isoStr], MADRID_SCHOOL_CAL[isoStr] || (dateObj.getFullYear() === 2026 && (m===11 || m<=0 || m===2 || m===3 || m===5) && (Math.random() > 0.9 ? "假期" : null)), ES_FESTS[`${m+1}-${d}`], getLunar(y, m, d), y, m);
+                const schoolOff = isMadridSchoolHoliday(y, m, d);
+                createDay(d, false, new Date().toDateString() === new Date(y,m,d).toDateString(), selectedDate.toDateString() === new Date(y,m,d).toDateString(), terms[d], CN_HOLIDAY_2026[isoStr], schoolOff, ES_FESTS[`${m+1}-${d}`], getLunar(y, m, d), y, m);
             }
         }
 
@@ -253,15 +298,18 @@
             const div = document.createElement('div');
             div.className = `day-card ${isPad ? 'opacity-20 pointer-events-none' : ''} ${isToday ? 'is-today' : ''} ${isSelected ? 'day-selected' : ''}`;
             if (!isPad) div.onclick = () => { selectedDate = new Date(y, m, d); updateAlmanac(); render(); };
+            
             let html = "";
             if (cnHoliday) html += `<div class="${cnHoliday.type === 'work' ? 'work-tag' : 'rest-tag'}">${cnHoliday.type === 'work' ? '班' : '休'}</div>`;
-            if (schoolOff) html += `<div class="tag-school-off">校休</div>`;
+            if (schoolOff) html += `<div class="tag-school-off" title="${schoolOff}">校休</div>`;
+            
             const isRedDay = cnHoliday?.type === 'rest' || esFest || new Date(y,m,d).getDay() === 0 || new Date(y,m,d).getDay() === 6;
             html += `<span class="text-xl font-black ${isRedDay ? 'text-red-500' : 'text-slate-800'}">${d}</span>`;
             if (cnHoliday) html += `<span class="fest-cn text-[0.6rem] truncate px-1">${cnHoliday.name}</span>`;
             else if (esFest) html += `<span class="fest-es text-[0.6rem] font-bold truncate px-1">${esFest.split(' ')[0]}</span>`;
             else if (term) html += `<span class="term-text text-[0.6rem]">${term}</span>`;
             else if (lunar) html += `<span class="lunar-text text-[0.6rem]">${lunar.d === 1 ? LUNAR_MONTHS[lunar.m-1] : LUNAR_DAYS[lunar.d-1]}</span>`;
+            
             div.innerHTML = html;
             document.getElementById('calendarDays').appendChild(div);
         }
@@ -270,7 +318,7 @@
             const y = selectedDate.getFullYear(), m = selectedDate.getMonth(), d = selectedDate.getDate();
             const iso = `${y}-${(m+1).toString().padStart(2,'0')}-${d.toString().padStart(2,'0')}`;
             const lunar = getLunar(y, m, d), gz = getGZ(y, m, d);
-            const esFest = ES_FESTS[`${m+1}-${d}`], cnHol = CN_HOLIDAY_2026[iso];
+            const esFest = ES_FESTS[`${m+1}-${d}`], cnHol = CN_HOLIDAY_2026[iso], schoolOff = isMadridSchoolHoliday(y, m, d);
             
             document.getElementById('sideDate').innerText = d;
             document.getElementById('sideMonthYear').innerText = selectedDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -282,19 +330,18 @@
             const seed = gz.offset || 0;
             document.getElementById('sideYi').innerText = [YI_LIST[seed % YI_LIST.length], YI_LIST[(seed * 3 + 2) % YI_LIST.length]].join('、');
             document.getElementById('sideJi').innerText = [JI_LIST[seed % JI_LIST.length], JI_LIST[(seed * 7 + 1) % JI_LIST.length]].join('、');
-            const zhiIdx = (seed + 14) % 12;
-            document.getElementById('sideChong').innerText = `冲${D_ZHI[(zhiIdx + 6) % 12]} 煞${["北", "东", "南", "西"][zhiIdx % 4]}`;
+            document.getElementById('sideChong').innerText = `冲${D_ZHI[((seed+14)%12+6)%12]} 煞${["北", "东", "南", "西"][(seed+14)%4]}`;
 
             const holBox = document.getElementById('sideHolidayBox');
-            if (esFest || cnHol) {
+            if (esFest || cnHol || schoolOff) {
                 holBox.classList.remove('hidden');
                 let info = "";
-                if (esFest) info += `<div class="text-purple-700">🇪🇸 西班牙: ${esFest}</div>`;
-                if (cnHol) info += `<div class="text-red-700">🇨🇳 中国: ${cnHol.name}</div>`;
+                if (esFest) info += `<div class="text-purple-700">🇪🇸 公众假期: ${esFest}</div>`;
+                if (schoolOff) info += `<div class="text-amber-700 font-bold">🏫 马德里校假: ${schoolOff}</div>`;
+                if (cnHol) info += `<div class="text-red-700">🇨🇳 中国节假日: ${cnHol.name}</div>`;
                 document.getElementById('sideHolidayText').innerHTML = info;
             } else holBox.classList.add('hidden');
 
-            // 节气与数九/三伏
             let termInfo = "今日无特殊节气提醒";
             for (let i = 0; i < 24; i++) {
                 const tDate = getTermDate(y, i);
@@ -303,7 +350,8 @@
             document.getElementById('sideTermInfo').innerText = termInfo;
             
             const sj = getShujiu(selectedDate), sf = getSanfu(selectedDate);
-            document.getElementById('sideShujiuInfo').innerText = (sj ? "当前：" + sj : "") + (sf ? "当前：" + sf : "");
+            document.getElementById('sideShujiuInfo').innerHTML = (sj ? `<span class="bg-blue-100 px-2 py-0.5 rounded">${sj}</span>` : "") + 
+                                                               (sf ? `<span class="bg-orange-100 px-2 py-0.5 rounded ml-2">${sf}</span>` : "");
         }
 
         function initSelectors() {
