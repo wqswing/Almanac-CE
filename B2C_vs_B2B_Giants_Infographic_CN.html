@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>规模的鸿沟：为什么B2C出大厂，B2B出中厂</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+
+    <!-- Google Fonts (Including Noto Sans SC for Chinese) -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <!-- 
+        NARRATIVE PLAN (CHINESE):
+        1. Title: "The Scale Divergence" -> 规模的鸿沟.
+        2. Valuation Gap: B2C Giants (Trillions) vs B2B Leaders (Billions).
+        3. Scale Wall: 8 Billion People vs Millions of Companies.
+        4. Growth: Viral/Network Effects vs Sales Teams.
+        5. Friction: "Click to Buy" vs "Procurement Committee".
+        6. DNA: Standardization vs Customization.
+        7. Conclusion: The structural ceiling.
+
+        CHOSEN PALETTE: "Vibrant Cyber-Corporate" (活力商务风)
+        - Primary Blue: #2563EB (Royal Blue)
+        - Accent Pink: #EC4899 (Pink)
+        - Accent Teal: #14B8A6 (Teal)
+        - Accent Purple: #8B5CF6 (Violet)
+        - Background: #F8FAFC (Slate 50)
+    -->
+
+    <style>
+        body {
+            font-family: 'Noto Sans SC', 'Inter', sans-serif;
+            background-color: #F8FAFC;
+            color: #1E293B;
+        }
+
+        /* Chart Container Strategy */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 100%;
+            height: 350px;
+            margin: 0 auto;
+        }
+
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Diagram Styling (No SVG - Pure CSS/HTML) */
+        .flow-step {
+            position: relative;
+            z-index: 10;
+        }
+        
+        /* Connecting lines */
+        .connector-line-b2c {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #2563EB, #EC4899);
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        .connector-line-b2b {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: repeating-linear-gradient(90deg, #94a3b8, #94a3b8 10px, transparent 10px, transparent 20px);
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+
+        .card-hover {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Header Section -->
+    <header class="bg-gradient-to-r from-blue-900 to-indigo-800 text-white py-12 px-4 shadow-xl">
+        <div class="max-w-7xl mx-auto text-center">
+            <h1 class="text-4xl md:text-6xl font-black tracking-tight mb-4">
+                规模的鸿沟
+            </h1>
+            <p class="text-xl md:text-2xl text-blue-100 font-light max-w-4xl mx-auto">
+                为什么全球范围内 <span class="font-bold text-pink-400">To C</span> 容易出万亿级"大厂"，<br>而 <span class="font-bold text-teal-400">To B</span> 往往止步于百亿级"中厂"？
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 py-8 space-y-16">
+
+        <!-- Introduction -->
+        <section class="prose prose-lg max-w-4xl mx-auto text-center text-slate-600">
+            <p>
+                在全球互联网版图中，存在一个显著的规律：市值最高的绝对巨头（Giants）绝大多数是 <strong>面向消费者 (B2C)</strong> 的企业。相比之下，<strong>面向企业 (B2B)</strong> 的公司虽然盈利稳定、护城河深，但很少能突破万亿美元的市值天花板。本图解将通过数据可视化，深度解析两者在市场天花板、增长机制和交易摩擦上的本质差异。
+            </p>
+        </section>
+
+        <!-- Section 1: The Valuation Gap (Bar Chart) -->
+        <section>
+            <div class="mb-6 border-l-4 border-blue-600 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">1. 估值的数量级差异</h2>
+                <p class="text-slate-600 mt-2">
+                    直接对比头部科技公司的市值，可以发现明显的数量级断层。B2C巨头利用其庞大的用户基数和网络效应，实现了B2B领头羊难以企及的估值倍数。
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <!-- Data Card -->
+                <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500 card-hover col-span-1 flex flex-col justify-center">
+                    <div class="text-center">
+                        <span class="text-5xl font-bold text-blue-600 block mb-2">~5-10倍</span>
+                        <span class="text-sm text-slate-500 font-bold uppercase tracking-wider">市值倍数差</span>
+                    </div>
+                    <p class="mt-4 text-slate-600 text-sm text-center">
+                        顶级B2C科技巨头的市值通常是顶级B2B SaaS公司的5到10倍。这是"流量经济"与"服务经济"的本质差距。
+                    </p>
+                </div>
+
+                <!-- Chart -->
+                <div class="bg-white p-6 rounded-xl shadow-md col-span-1 lg:col-span-2">
+                    <h3 class="text-lg font-bold text-slate-700 mb-4 border-b pb-2">全球科技巨头市值对比 (万亿美元)</h3>
+                    <div class="chart-container">
+                        <canvas id="marketCapChart"></canvas>
+                    </div>
+                    <p class="text-xs text-slate-400 mt-2 text-center italic">注：数据为近似峰值，仅作趋势参考。</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Addressable Market (Horizontal Log Bar) -->
+        <section>
+            <div class="mb-6 border-l-4 border-pink-500 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">2. 用户 vs 客户：量级天花板</h2>
+                <p class="text-slate-600 mt-2">
+                    B2B的根本天花板在于"实体的数量"。全球有80亿人口（B2C的潜在用户），但仅有数亿家注册企业（B2B的潜在客户）。下表展示了"最大可触达单元"的巨大鸿沟。
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                    <div class="chart-container h-80">
+                        <canvas id="userScaleChart"></canvas>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="flex items-start">
+                            <div class="bg-pink-100 p-3 rounded-full mr-4 text-2xl">🌍</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">80亿人口天花板 (B2C)</h4>
+                                <p class="text-sm text-slate-600">Facebook或TikTok理论上可以触达每一个拥有智能手机的人类。其增长边界是生物学意义上的人口总数。</p>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-indigo-100 p-3 rounded-full mr-4 text-2xl">🏢</div>
+                            <div>
+                                <h4 class="font-bold text-slate-800">组织机构天花板 (B2B)</h4>
+                                <p class="text-sm text-slate-600">B2B软件服务于公司。即便是像Salesforce这样的全球霸主，其核心付费客户也是以"万"为单位，而非"亿"。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Growth Dynamics (Line Chart) -->
+        <section>
+            <div class="mb-6 border-l-4 border-teal-500 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">3. 病毒式 vs 线性增长</h2>
+                <p class="text-slate-600 mt-2">
+                    扩张模式决定了速度。B2C享有"网络效应"，每增加一个用户都让平台价值更高（指数级）；B2B依赖销售团队、实施和签约，增长往往与人力投入挂钩（线性/阶梯式）。
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <h3 class="text-lg font-bold text-slate-700 mb-4">用户/收入增长轨迹模拟</h3>
+                <div class="chart-container">
+                    <canvas id="growthCurveChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Decision Friction Diagram (HTML/Tailwind) -->
+        <section>
+            <div class="mb-6 border-l-4 border-purple-500 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">4. 决策摩擦力分析</h2>
+                <p class="text-slate-600 mt-2">
+                    为什么B2B慢？因为"购买链条"太长。B2C是冲动消费，分分钟完成；B2B是理性决策，涉及层层审批。下图对比了通往收入的路径。
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- B2C Flow -->
+                <div class="bg-gradient-to-br from-blue-50 to-white p-6 rounded-xl shadow-md border border-blue-100 relative overflow-hidden">
+                    <h3 class="text-xl font-black text-blue-700 mb-8 text-center">To C 交易路径</h3>
+                    
+                    <div class="relative flex justify-between items-center h-24 px-4">
+                        <div class="connector-line-b2c"></div>
+                        
+                        <!-- Step 1 -->
+                        <div class="flow-step flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-blue-600 text-white flex items-center justify-center text-xl shadow-lg border-4 border-white">👀</div>
+                            <span class="text-xs font-bold mt-2 text-slate-700">看广告</span>
+                        </div>
+                        
+                        <!-- Step 2 -->
+                        <div class="flow-step flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-blue-500 text-white flex items-center justify-center text-xl shadow-lg border-4 border-white">📲</div>
+                            <span class="text-xs font-bold mt-2 text-slate-700">下载APP</span>
+                        </div>
+
+                        <!-- Step 3 -->
+                        <div class="flow-step flex flex-col items-center">
+                            <div class="w-12 h-12 rounded-full bg-pink-500 text-white flex items-center justify-center text-xl shadow-lg border-4 border-white animate-pulse">💳</div>
+                            <span class="text-xs font-bold mt-2 text-slate-700">支付/下单</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 text-center">
+                        <span class="bg-green-100 text-green-800 text-xs font-bold px-3 py-1 rounded-full">耗时：几分钟</span>
+                    </div>
+                </div>
+
+                <!-- B2B Flow -->
+                <div class="bg-gradient-to-br from-slate-50 to-white p-6 rounded-xl shadow-md border border-slate-200 relative">
+                    <h3 class="text-xl font-black text-slate-700 mb-8 text-center">To B 交易路径</h3>
+                    
+                    <!-- Grid for the complex path -->
+                    <div class="grid grid-cols-3 gap-y-8 gap-x-2 relative z-10">
+                        <!-- Step 1 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-slate-400 text-white flex items-center justify-center text-sm shadow border-2 border-white">🤝</div>
+                            <span class="text-[10px] font-bold mt-1 text-slate-600">销售线索</span>
+                        </div>
+                        <!-- Step 2 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-slate-400 text-white flex items-center justify-center text-sm shadow border-2 border-white">📞</div>
+                            <span class="text-[10px] font-bold mt-1 text-slate-600">电话/拜访</span>
+                        </div>
+                        <!-- Step 3 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-slate-500 text-white flex items-center justify-center text-sm shadow border-2 border-white">💻</div>
+                            <span class="text-[10px] font-bold mt-1 text-slate-600">方案演示</span>
+                        </div>
+                        <!-- Step 4 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-slate-500 text-white flex items-center justify-center text-sm shadow border-2 border-white">👔</div>
+                            <span class="text-[10px] font-bold mt-1 text-slate-600">决策委员会</span>
+                        </div>
+                        <!-- Step 5 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-slate-600 text-white flex items-center justify-center text-sm shadow border-2 border-white">⚖️</div>
+                            <span class="text-[10px] font-bold mt-1 text-slate-600">法务合规</span>
+                        </div>
+                        <!-- Step 6 -->
+                        <div class="flex flex-col items-center">
+                            <div class="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center text-sm shadow border-2 border-white">🖊️</div>
+                            <span class="text-[10px] font-bold mt-1 text-slate-600">签约回款</span>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-8 text-center">
+                        <span class="bg-orange-100 text-orange-800 text-xs font-bold px-3 py-1 rounded-full">耗时：3-12 个月</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: Structural Analysis (Radar Chart) -->
+        <section class="mb-12">
+            <div class="mb-6 border-l-4 border-yellow-500 pl-4">
+                <h2 class="text-3xl font-bold text-slate-800">5. 基因结构分析</h2>
+                <p class="text-slate-600 mt-2">
+                    对比B2C与B2B模式的核心属性。B2C胜在标准化和病毒传播，而B2B则胜在客户留存和定价权（高转换成本）。
+                </p>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl shadow-md">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-2">
+                        <div class="chart-container">
+                            <canvas id="radarAttributeChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="md:col-span-1 flex flex-col justify-center space-y-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border-l-4 border-blue-500">
+                            <h4 class="font-bold text-blue-800">B2C 优势基因</h4>
+                            <p class="text-sm text-blue-600">高网络效应 & 极致标准化。<br>一款产品打天下，边际成本趋近于零。</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border-l-4 border-purple-500">
+                            <h4 class="font-bold text-purple-800">B2B 优势基因</h4>
+                            <p class="text-sm text-purple-600">高留存率 & 定价权。<br>深度嵌入客户业务流，一旦用上很难替换。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Conclusion -->
+        <footer class="bg-slate-800 text-slate-300 rounded-2xl p-8 text-center shadow-inner">
+            <h2 class="text-2xl font-bold text-white mb-4">结论：大厂 vs 中厂</h2>
+            <p class="max-w-3xl mx-auto leading-relaxed">
+                B2B公司是经济的"引擎"——稳定、盈利且不可或缺。但它们触碰到了由企业数量限制和非标准化服务带来的隐形天花板。相比之下，B2C公司如同"超新星"，能够利用互联网的零边际成本实现无限复制，从而突破万亿市值，成为真正的"大厂"。
+            </p>
+        </footer>
+
+    </main>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- UTILITY: Label Wrapping Function ---
+        // Enhanced for Chinese: simple split isn't enough, but we will pass pre-split arrays in data 
+        // to strictly adhere to the requirement of "array of strings".
+        function wrapLabel(str, maxChars) {
+            if (str.length <= maxChars) return str;
+            // For Chinese, we can't just split by space. 
+            // This is a fallback dummy splitter if string is passed.
+            return str.match(new RegExp('.{1,' + maxChars + '}', 'g'));
+        }
+
+        // --- GLOBAL CHART CONFIG ---
+        Chart.defaults.font.family = "'Noto Sans SC', 'Inter', sans-serif";
+        Chart.defaults.color = '#64748B';
+        
+        // Tooltip Callback for Multiline Labels
+        const tooltipPlugin = {
+            tooltip: {
+                backgroundColor: 'rgba(30, 41, 59, 0.9)',
+                padding: 12,
+                cornerRadius: 8,
+                callbacks: {
+                    title: function(tooltipItems) {
+                        const item = tooltipItems[0];
+                        let label = item.chart.data.labels[item.dataIndex];
+                        if (Array.isArray(label)) {
+                            return label.join(''); // Join with empty string for Chinese flow
+                        } else {
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        // --- CHART 1: Market Cap Comparison (Bar) ---
+        const ctxMarketCap = document.getElementById('marketCapChart').getContext('2d');
+        new Chart(ctxMarketCap, {
+            type: 'bar',
+            data: {
+                labels: ['苹果 (B2C)', '微软 (混合型)', '谷歌 (B2C/广告)', '亚马逊 (B2C)', 'Salesforce (B2B)', '甲骨文 (B2B)', 'SAP (B2B)', 'Workday (B2B)'],
+                datasets: [{
+                    label: '市值 (万亿美元)',
+                    data: [3.0, 2.8, 1.7, 1.6, 0.3, 0.35, 0.2, 0.07],
+                    backgroundColor: [
+                        '#2563EB', '#2563EB', '#2563EB', '#2563EB', // B2C/Hybrid = Blue
+                        '#8B5CF6', '#8B5CF6', '#8B5CF6', '#8B5CF6'  // B2B = Purple
+                    ],
+                    borderRadius: 6,
+                    barPercentage: 0.6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    ...tooltipPlugin,
+                    title: {
+                        display: true,
+                        text: 'B2C 巨头 (蓝) vs. B2B 领袖 (紫)',
+                        font: { size: 16 }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: { display: true, text: '万亿美元 (Trillion USD)' }
+                    }
+                }
+            }
+        });
+
+        // --- CHART 2: User Scale (Horizontal Bar - Logarithmic feel) ---
+        const ctxUserScale = document.getElementById('userScaleChart').getContext('2d');
+        new Chart(ctxUserScale, {
+            type: 'bar', // Horizontal bar
+            data: {
+                // Using Arrays for labels to force clear breaks if needed, though short enough here
+                labels: ['Facebook 月活', 'YouTube 用户', 'Salesforce 客户数', 'Workday 客户数'],
+                datasets: [{
+                    label: '活跃单元数 (对数级)',
+                    data: [3000000000, 2500000000, 150000, 10000], 
+                    backgroundColor: ['#EC4899', '#EC4899', '#4F46E5', '#4F46E5'],
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y', // Makes it horizontal
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                let label = context.dataset.label || '';
+                                if (label) {
+                                    label += ': ';
+                                }
+                                if (context.parsed.x > 1000000) {
+                                    label += (context.parsed.x / 100000000).toFixed(1) + ' 亿 (Users)';
+                                } else {
+                                    label += (context.parsed.x / 10000).toFixed(1) + ' 万 (Clients)';
+                                }
+                                return label;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        type: 'logarithmic', // Critical
+                        title: { display: true, text: '活跃用户/客户数 (对数坐标)' }
+                    }
+                }
+            }
+        });
+
+        // --- CHART 3: Growth Curve (Line) ---
+        const ctxGrowth = document.getElementById('growthCurveChart').getContext('2d');
+        new Chart(ctxGrowth, {
+            type: 'line',
+            data: {
+                labels: ['第1年', '第2年', '第3年', '第4年', '第5年', '第6年', '第7年'],
+                datasets: [
+                    {
+                        label: 'To C (病毒式/指数级)',
+                        data: [10, 50, 200, 800, 4000, 20000, 100000],
+                        borderColor: '#2563EB',
+                        backgroundColor: '#2563EB',
+                        tension: 0.4,
+                        borderWidth: 3,
+                        pointRadius: 0
+                    },
+                    {
+                        label: 'To B (线性/销售驱动)',
+                        data: [100, 250, 450, 700, 950, 1200, 1500],
+                        borderColor: '#8B5CF6',
+                        backgroundColor: '#8B5CF6',
+                        tension: 0.1,
+                        borderWidth: 3,
+                        pointRadius: 0
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...tooltipPlugin,
+                    title: { display: true, text: '增长轨迹对比' }
+                },
+                scales: {
+                    y: {
+                        type: 'linear',
+                        title: { display: true, text: '收入 / 用户规模' }
+                    }
+                }
+            }
+        });
+
+        // --- CHART 4: Attributes Radar (Radar) ---
+        const ctxRadar = document.getElementById('radarAttributeChart').getContext('2d');
+        new Chart(ctxRadar, {
+            type: 'radar',
+            data: {
+                // Manually wrapping labels for Chinese layout
+                labels: [
+                    ['网络效应', '(Network Effects)'], 
+                    ['标准化程度', '(Standardization)'], 
+                    ['销售摩擦力', '(Sales Friction)'], 
+                    ['客单价', '(Unit Price)'], 
+                    ['留存率', '(Retention)'], 
+                    ['定制化需求', '(Customization)']
+                ],
+                datasets: [{
+                    label: 'To C 模式',
+                    data: [95, 90, 10, 20, 40, 10], 
+                    fill: true,
+                    backgroundColor: 'rgba(37, 99, 235, 0.2)',
+                    borderColor: '#2563EB',
+                    pointBackgroundColor: '#2563EB',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#2563EB'
+                }, {
+                    label: 'To B 模式',
+                    data: [30, 40, 90, 90, 95, 80],
+                    fill: true,
+                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                    borderColor: '#8B5CF6',
+                    pointBackgroundColor: '#8B5CF6',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: '#8B5CF6'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    ...tooltipPlugin
+                },
+                scales: {
+                    r: {
+                        angleLines: { color: '#E2E8F0' },
+                        grid: { color: '#E2E8F0' },
+                        pointLabels: {
+                            font: { size: 12, weight: 'bold' },
+                            color: '#475569'
+                        },
+                        suggestedMin: 0,
+                        suggestedMax: 100
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+<!-- 
+    CONFIRMATION:
+    1. Language: Chinese (Simplified).
+    2. NO MERMAID JS USED.
+    3. NO SVG GRAPHICS USED (Unicode icons and CSS shapes used instead).
+    4. Palette: Vibrant Cyber-Corporate.
+-->
+</html>
