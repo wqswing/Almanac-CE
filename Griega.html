@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>古希腊文化详析 (Cultura Griega)</title>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #fdfbf7;
+            color: #1a1a1a;
+        }
+        
+        .serif {
+            font-family: 'Noto Serif SC', serif;
+        }
+
+        .greek-pattern {
+            background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M20 20h20v20H20V20zM0 0h20v20H0V0zm10 10h20v20H10V10z' fill='%23b45309' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* Custom Scrollbar for inner content */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #d1d5db;
+            border-radius: 3px;
+        }
+        
+        /* Fade in animation */
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .spanish-term {
+            font-weight: 600;
+            color: #b45309; /* Amber-700 */
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // --- SVG Icons ---
+        const IconBase = ({ children, size = 24, className = "" }) => (
+            <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>{children}</svg>
+        );
+        const UsersIcon = (props) => (<IconBase {...props}><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M22 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" /></IconBase>);
+        const BookOpenIcon = (props) => (<IconBase {...props}><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" /><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" /></IconBase>);
+        const SunIcon = (props) => (<IconBase {...props}><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></IconBase>);
+        const PaletteIcon = (props) => (<IconBase {...props}><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z" /></IconBase>);
+        const CoinsIcon = (props) => (<IconBase {...props}><circle cx="8" cy="8" r="6" /><path d="M18.09 10.37A6 6 0 1 1 10.34 18" /><path d="M7 6h1v4" /><path d="m16.71 13.88.7 .71-2.82 2.82" /></IconBase>);
+        const LandmarkIcon = (props) => (<IconBase {...props}><line x1="3" y1="22" x2="21" y2="22" /><line x1="6" y1="18" x2="6" y2="11" /><line x1="10" y1="18" x2="10" y2="11" /><line x1="14" y1="18" x2="14" y2="11" /><line x1="18" y1="18" x2="18" y2="11" /><polygon points="12 2 20 7 4 7" /></IconBase>);
+        const SwordsIcon = (props) => (<IconBase {...props}><polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5" /><line x1="13" y1="19" x2="19" y2="13" /><line x1="16" y1="16" x2="20" y2="20" /><line x1="19" y1="21" x2="21" y2="19" /><polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5" /><line x1="5" y1="14" x2="9" y2="18" /><line x1="7" y1="17" x2="4" y2="20" /><line x1="3" y1="19" x2="5" y2="21" /></IconBase>);
+        const FeatherIcon = (props) => (<IconBase {...props}><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z" /><line x1="16" y1="8" x2="2" y2="22" /><line x1="17.5" y1="15" x2="9" y2="15" /></IconBase>);
+        const ScaleIcon = (props) => (<IconBase {...props}><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z" /><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1z" /><path d="M7 21h10" /><path d="M12 3v18" /><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2" /></IconBase>);
+        const GraduationCapIcon = (props) => (<IconBase {...props}><path d="M22 10v6M2 10l10-5 10 5-10 5z" /><path d="M6 12v5c3 3 9 3 12 0v-5" /></IconBase>);
+        const ActivityIcon = (props) => (<IconBase {...props}><path d="M22 12h-4l-3 9L9 3l-3 9H2" /></IconBase>);
+        const CrownIcon = (props) => (<IconBase {...props}><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14" /></IconBase>);
+
+        const IconWrapper = ({ children, className }) => (
+            <div className={`p-2 rounded-lg ${className} inline-flex items-center justify-center`}>
+                {children}
+            </div>
+        );
+
+        // --- Data & Components ---
+
+        const App = () => {
+            const [activeTab, setActiveTab] = useState('society');
+
+            const tabs = [
+                { id: 'society', label: 'La Vida (生活)', icon: <UsersIcon size={18} /> },
+                { id: 'culture', label: 'Cultura (文化)', icon: <BookOpenIcon size={18} /> },
+                { id: 'religion', label: 'Religión (宗教)', icon: <SunIcon size={18} /> },
+                { id: 'art', label: 'Arte (艺术)', icon: <PaletteIcon size={18} /> },
+            ];
+
+            return (
+                <div className="min-h-screen greek-pattern pb-12">
+                    <header className="bg-amber-900 text-white shadow-lg relative overflow-hidden">
+                        <div className="absolute top-0 left-0 w-full h-full opacity-10 bg-[url('https://www.transparenttextures.com/patterns/greek-vase.png')]"></div>
+                        <div className="container mx-auto px-4 py-8 relative z-10 text-center">
+                            <h1 className="text-3xl md:text-5xl font-bold serif mb-2 tracking-wider">Antigua Grecia</h1>
+                            <p className="text-amber-200 text-lg">古希腊文明详解</p>
+                        </div>
+                    </header>
+
+                    <nav className="bg-white shadow sticky top-0 z-30">
+                        <div className="container mx-auto px-4">
+                            <div className="flex overflow-x-auto justify-center space-x-2 md:space-x-6 py-4 custom-scroll">
+                                {tabs.map(tab => (
+                                    <button
+                                        key={tab.id}
+                                        onClick={() => setActiveTab(tab.id)}
+                                        className={`flex items-center space-x-2 px-4 py-2 rounded-full transition-all duration-300 whitespace-nowrap border
+                                            ${activeTab === tab.id 
+                                                ? 'bg-amber-700 text-white border-amber-700 shadow-md transform scale-105' 
+                                                : 'bg-white text-gray-600 border-gray-200 hover:bg-amber-50 hover:text-amber-800'}`}
+                                    >
+                                        {tab.icon}
+                                        <span className="font-medium">{tab.label}</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="container mx-auto px-4 py-8 max-w-6xl">
+                        <div className="bg-white rounded-2xl shadow-xl p-6 md:p-10 min-h-[600px] transition-all duration-500 border border-stone-200">
+                            {activeTab === 'society' && <SocietySection />}
+                            {activeTab === 'culture' && <CultureSection />}
+                            {activeTab === 'religion' && <ReligionSection />}
+                            {activeTab === 'art' && <ArtSection />}
+                        </div>
+                    </main>
+                </div>
+            );
+        };
+
+        const SocietySection = () => (
+            <div className="animate-fade-in space-y-8">
+                <div className="text-center mb-8 border-b border-stone-200 pb-4">
+                    <h2 className="text-3xl font-bold text-gray-800 serif mb-2">Sociedad y Economía (社会与经济)</h2>
+                    <p className="text-gray-600">城邦 (<span className="spanish-term">Polis</span>) 与家庭 (<span className="spanish-term">Oikos</span>) 是生活的核心。</p>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-8">
+                    <div className="bg-orange-50 rounded-xl p-6 border border-orange-200">
+                        <div className="flex items-center space-x-3 mb-4">
+                            <IconWrapper className="bg-orange-200 text-orange-900"><CoinsIcon size={24} /></IconWrapper>
+                            <h3 className="text-xl font-bold text-gray-800">El Oikos (经济基础)</h3>
+                        </div>
+                        <ul className="space-y-4 text-gray-700 text-sm leading-relaxed">
+                            <li className="flex items-start">
+                                <span className="mr-2 text-orange-600 font-bold">1.</span>
+                                <span><span className="spanish-term">Oikos</span> 不仅是住宅，更是基本的生产单位（包含土地、工具、牲畜、家属和奴隶）。</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="mr-2 text-orange-600 font-bold">2.</span>
+                                <span><strong>农业理想：</strong> 主要是 <span className="spanish-term">Trilogía mediterránea</span> (地中海三宝)：<br/>
+                                <span className="spanish-term ml-2">- Cereales</span> (谷物)<br/>
+                                <span className="spanish-term ml-2">- Vid</span> (葡萄)<br/>
+                                <span className="spanish-term ml-2">- Olivo</span> (橄榄)</span>
+                            </li>
+                            <li className="flex items-start">
+                                <span className="mr-2 text-orange-600 font-bold">3.</span>
+                                <span><strong>工商业：</strong> 手工业在作坊 (<span className="spanish-term">Obradores</span>) 进行。海上贸易利润最高，使用 <span className="spanish-term">Dracma</span> (德拉克马) 货币。</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-rose-50 rounded-xl p-6 border border-rose-200">
+                        <div className="flex items-center space-x-3 mb-4">
+                            <IconWrapper className="bg-rose-200 text-rose-900"><UsersIcon size={24} /></IconWrapper>
+                            <h3 className="text-xl font-bold text-gray-800">Las Mujeres (妇女地位)</h3>
+                        </div>
+                        <ul className="space-y-4 text-gray-700 text-sm leading-relaxed">
+                            <li>
+                                <strong>父权制 (<span className="spanish-term">Patriarcado</span>):</strong> 女性终身受男性（父亲/丈夫）监护。
+                            </li>
+                            <li>
+                                <strong>空间隔离:</strong><br/>
+                                - <span className="spanish-term">Gineceo:</span> 住宅中女性专用的区域，负责育儿。<br/>
+                                - <span className="spanish-term">Andrón:</span> 男性社交和举办宴会 (<span className="spanish-term">Simposios</span>) 的场所。
+                            </li>
+                            <li className="italic text-rose-700">
+                                * 例外：斯巴达妇女拥有更多行动自由。
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div className="mt-8">
+                    <h3 className="text-2xl font-bold text-center mb-6 serif text-gray-800">Estructura Social (社会结构对比)</h3>
+                    <div className="grid md:grid-cols-2 gap-4">
+                        <div className="bg-sky-50 p-6 rounded-lg border border-sky-200">
+                            <div className="flex items-center justify-center mb-4 text-sky-900 border-b border-sky-200 pb-2">
+                                <LandmarkIcon size={28} className="mr-2" />
+                                <div>
+                                    <h4 className="text-xl font-bold">Atenas (雅典)</h4>
+                                    <span className="text-xs uppercase tracking-widest">Democracia (民主制)</span>
+                                </div>
+                            </div>
+                            <div className="space-y-3 text-sm">
+                                <p><strong>Demos (公民):</strong> 均有政治权利，但财富分化。</p>
+                                <ul className="list-disc list-inside pl-2 text-gray-600">
+                                    <li><span className="spanish-term">Aristoi:</span> 贵族 ("最好的")</li>
+                                    <li>中小所有者</li>
+                                    <li><span className="spanish-term">Thetes:</span> 无地雇工</li>
+                                </ul>
+                                <p><strong>Metecos (外邦人):</strong> 自由但无公民权，多经商。</p>
+                                <p><strong>Esclavos (奴隶):</strong> 无权利，财产。</p>
+                            </div>
+                        </div>
+
+                        <div className="bg-red-50 p-6 rounded-lg border border-red-200">
+                            <div className="flex items-center justify-center mb-4 text-red-900 border-b border-red-200 pb-2">
+                                <SwordsIcon size={28} className="mr-2" />
+                                <div>
+                                    <h4 className="text-xl font-bold">Esparta (斯巴达)</h4>
+                                    <span className="text-xs uppercase tracking-widest">Aristocracia (贵族制)</span>
+                                </div>
+                            </div>
+                            <div className="space-y-3 text-sm">
+                                <p><strong>Espartiatas:</strong> 少数统治阶层，拥有土地和军权。</p>
+                                <p><strong>Periecos:</strong> 臣服的村民，有人身自由但无政治权。</p>
+                                <p><strong>Ilotas:</strong> 半奴隶 (<span className="spanish-term">Semiesclavitud</span>)，为斯巴达人耕种。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const CultureSection = () => (
+            <div className="animate-fade-in">
+                <div className="text-center mb-10 border-b border-stone-200 pb-4">
+                    <h2 className="text-3xl font-bold text-gray-800 serif mb-2">Cultura e Identidad (文化与身份)</h2>
+                    <p className="text-gray-600">从神话到理性 (<span className="spanish-term">Logos</span>)，希腊语是核心纽带。</p>
+                </div>
+
+                <div className="grid lg:grid-cols-3 gap-6">
+                    <div className="bg-indigo-50 rounded-xl p-6 border border-indigo-100">
+                        <div className="text-center mb-4">
+                            <IconWrapper className="bg-indigo-200 text-indigo-900"><FeatherIcon size={24} /></IconWrapper>
+                            <h3 className="text-lg font-bold text-indigo-900 mt-2">Literatura (文学)</h3>
+                        </div>
+                        <ul className="space-y-4 text-sm text-gray-700">
+                            <li>
+                                <span className="block font-bold text-indigo-700 mb-1">Épica (史诗)</span>
+                                荷马 (<span className="spanish-term">Homero</span>) 的《伊利亚特》与《奥德赛》。
+                            </li>
+                            <li>
+                                <span className="block font-bold text-indigo-700 mb-1">Lírica (抒情诗)</span>
+                                歌唱与舞蹈，代表人物：萨福 (<span className="spanish-term">Safo</span>)。
+                            </li>
+                            <li>
+                                <span className="block font-bold text-indigo-700 mb-1">Teatro (戏剧)</span>
+                                公民教育工具。分为悲剧 (<span className="spanish-term">Tragedia</span>) 和喜剧 (<span className="spanish-term">Comedia</span>)。
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div className="bg-emerald-50 rounded-xl p-6 border border-emerald-100">
+                        <div className="text-center mb-4">
+                            <IconWrapper className="bg-emerald-200 text-emerald-900"><ScaleIcon size={24} /></IconWrapper>
+                            <h3 className="text-lg font-bold text-emerald-900 mt-2">Del Mito al Logos (从神话到理性)</h3>
+                        </div>
+                        <div className="text-sm text-gray-700 space-y-3">
+                            <p>希腊人开始用 <span className="spanish-term">Logos</span> (理性/逻辑) 解释世界，诞生了哲学与科学。</p>
+                            <div className="bg-white p-3 rounded border border-emerald-200">
+                                <strong className="block text-emerald-800">Filosofía (哲学):</strong>
+                                Sócrates, Platón, Aristóteles
+                            </div>
+                            <div className="bg-white p-3 rounded border border-emerald-200">
+                                <strong className="block text-emerald-800">Ciencia (科学):</strong>
+                                医学: Hipócrates<br/>
+                                数学: Euclides, Pitágoras
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-blue-50 rounded-xl p-6 border border-blue-100">
+                        <div className="text-center mb-4">
+                            <IconWrapper className="bg-blue-200 text-blue-900"><GraduationCapIcon size={24} /></IconWrapper>
+                            <h3 className="text-lg font-bold text-blue-900 mt-2">Educación (教育)</h3>
+                        </div>
+                        <ul className="space-y-4 text-sm text-gray-700">
+                            <li>
+                                <strong className="text-blue-700">Grammatistas:</strong>
+                                负责教授阅读和写作。
+                            </li>
+                            <li>
+                                <strong className="text-blue-700">Gimnasios (体育馆):</strong>
+                                词源 <span className="spanish-term">gimnos</span> (裸体)。不仅是体育锻炼场所，也是智力教育和社交中心。
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const ReligionSection = () => (
+            <div className="animate-fade-in space-y-8">
+                <div className="text-center mb-8 border-b border-stone-200 pb-4">
+                    <h2 className="text-3xl font-bold text-gray-800 serif mb-2">La Religión (宗教信仰)</h2>
+                    <p className="text-gray-600">多神教 (<span className="spanish-term">Politeísta</span>) 与 神人同形同性 (<span className="spanish-term">Antropomórfica</span>)。</p>
+                </div>
+
+                <div className="grid md:grid-cols-4 gap-4 mb-8">
+                    {[
+                        {name: "Zeus", desc: "众神之父，雷电"},
+                        {name: "Hera", desc: "婚姻与家庭"},
+                        {name: "Poseidón", desc: "海洋"},
+                        {name: "Atenea", desc: "智慧与战争"},
+                        {name: "Apolo", desc: "太阳与艺术"},
+                        {name: "Afrodita", desc: "爱与美"},
+                        {name: "Ares", desc: "战争"},
+                        {name: "Hades", desc: "冥界 (Inframundo)"}
+                    ].map((god, i) => (
+                        <div key={i} className="bg-yellow-50 p-3 rounded border border-yellow-200 text-center">
+                            <span className="block font-bold text-amber-800">{god.name}</span>
+                            <span className="text-xs text-gray-600">{god.desc}</span>
+                        </div>
+                    ))}
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                        <h4 className="font-bold text-lg mb-2 text-gray-800 flex items-center"><CrownIcon size={20} className="mr-2 text-amber-600"/> Culto (崇拜)</h4>
+                        <ul className="space-y-3 text-sm text-gray-600 mt-3">
+                            <li><strong>Juegos panhelénicos (泛希腊运动会):</strong> 旨在团结各城邦。最著名的是献给宙斯的 <span className="spanish-term">Juegos Olímpicos</span>。</li>
+                            <li><strong>Sacrificios (献祭):</strong> 由城邦赞助的宗教仪式。</li>
+                        </ul>
+                    </div>
+                    <div className="bg-white border border-gray-200 p-6 rounded-xl shadow-sm">
+                        <h4 className="font-bold text-lg mb-2 text-gray-800 flex items-center"><ActivityIcon size={20} className="mr-2 text-amber-600"/> Mitos y Oráculos</h4>
+                        <ul className="space-y-3 text-sm text-gray-600 mt-3">
+                            <li><strong>Mitos (神话):</strong> 解释自然现象和起源的故事。</li>
+                            <li><strong>Oráculos (神谕):</strong> 预测未来。最著名的是 <span className="spanish-term">Oráculo de Delfos</span> (德尔斐)，由女祭司 <span className="spanish-term">Pitia</span> 传达阿波罗的神意。</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const ArtSection = () => (
+            <div className="animate-fade-in space-y-10">
+                <div className="text-center mb-8 border-b border-stone-200 pb-4">
+                    <h2 className="text-3xl font-bold text-gray-800 serif mb-2">El Arte (艺术)</h2>
+                    <p className="text-gray-600">追求比例 (<span className="spanish-term">Proporción</span>) 与和谐 (<span className="spanish-term">Armonía</span>)。</p>
+                </div>
+
+                <div className="bg-stone-50 rounded-xl p-8 border border-stone-200">
+                    <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">Arquitectura: Órdenes (建筑柱式)</h3>
+                    <p className="text-center text-sm text-gray-500 mb-8">特征：梁柱结构 (<span className="spanish-term">Arquitrabada</span>) 和 多色装饰 (<span className="spanish-term">Policromía</span>)</p>
+                    
+                    <div className="grid md:grid-cols-3 gap-6">
+                        <div className="bg-white p-4 rounded shadow-sm border-t-4 border-stone-400">
+                            <h4 className="font-bold text-lg text-center mb-2">Dórico (多立克)</h4>
+                            <ul className="text-xs text-gray-600 space-y-1">
+                                <li>- 最古老，朴素</li>
+                                <li>- 无柱基 (<span className="spanish-term">Sin basa</span>)</li>
+                                <li>- 中楣 (<span className="spanish-term">Friso</span>): 交替的 <span className="spanish-term">Triglifos</span> (三竖线) 和 <span className="spanish-term">Metopas</span> (浮雕板)</li>
+                            </ul>
+                        </div>
+                        <div className="bg-white p-4 rounded shadow-sm border-t-4 border-stone-400">
+                            <h4 className="font-bold text-lg text-center mb-2">Jónico (爱奥尼)</h4>
+                            <ul className="text-xs text-gray-600 space-y-1">
+                                <li>- 更修长，有柱基</li>
+                                <li>- 柱头 (<span className="spanish-term">Capitel</span>): 带有 <span className="spanish-term">Volutas</span> (涡卷)</li>
+                                <li>- 连续的浮雕中楣</li>
+                            </ul>
+                        </div>
+                        <div className="bg-white p-4 rounded shadow-sm border-t-4 border-stone-400">
+                            <h4 className="font-bold text-lg text-center mb-2">Corintio (科林斯)</h4>
+                            <ul className="text-xs text-gray-600 space-y-1">
+                                <li>- 希腊化时期</li>
+                                <li>- 极度华丽</li>
+                                <li>- 柱头装饰：<span className="spanish-term">Hojas de acanto</span> (毛爵床叶)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 className="text-xl font-bold text-gray-800 mb-6 text-center">Escultura (雕塑演变)</h3>
+                    <div className="space-y-4">
+                        <div className="flex flex-col md:flex-row bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="bg-gray-100 p-4 w-full md:w-32 flex items-center justify-center font-bold text-gray-500 text-sm">
+                                Arcaico<br/>(古风)
+                            </div>
+                            <div className="p-4">
+                                <p className="text-sm text-gray-700">受埃及影响，僵硬，正面直立。带着"古风式微笑"。</p>
+                                <p className="text-xs text-amber-700 mt-1 font-semibold">Kuroi (裸体男青年) / Korai (着衣少女)</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="bg-sky-100 p-4 w-full md:w-32 flex items-center justify-center font-bold text-sky-700 text-sm">
+                                Clásico<br/>(古典)
+                            </div>
+                            <div className="p-4">
+                                <p className="text-sm text-gray-700">理想美 (<span className="spanish-term">Belleza ideal</span>)，人体比例标准 (<span className="spanish-term">Canon</span>)。</p>
+                                <p className="text-xs text-sky-700 mt-1 font-semibold">Mirón (动态), Fidias (帕特农神庙), Policleto</p>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col md:flex-row bg-white border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="bg-purple-100 p-4 w-full md:w-32 flex items-center justify-center font-bold text-purple-700 text-sm">
+                                Helenístico<br/>(希腊化)
+                            </div>
+                            <div className="p-4">
+                                <p className="text-sm text-gray-700">现实主义 (<span className="spanish-term">Realismo</span>) 与 戏剧性 (<span className="spanish-term">Dramatismo</span>)。表现痛苦、衰老。</p>
+                                <p className="text-xs text-purple-700 mt-1 font-semibold">Laocoonte y sus hijos (拉奥孔)</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
